@@ -15,4 +15,19 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Configuration\" />
+    <Folder Include="Web\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimStop.Common\SimStop.Common.csproj" />
+    <ProjectReference Include="..\SimStop.Data.Models\SimStop.Data.Models.csproj" />
+    <ProjectReference Include="..\SimStop.Data\SimStop.Data.csproj" />
+    <ProjectReference Include="..\SimStop.Services.Data\SimStop.Services.Data.csproj" />
+    <ProjectReference Include="..\SimStop.Services.Mapping\SimStop.Services.Mapping.csproj" />
+    <ProjectReference Include="..\SimStop.Web.Infrastructure\SimStop.Web.Infrastructure.csproj" />
+    <ProjectReference Include="..\SimStop.Web.ViewModels\SimStop.Web.ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>
