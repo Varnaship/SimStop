@@ -9,7 +9,7 @@ namespace SimStop.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(CategoryNameMaxLenght)]
+        [MaxLength(CategoryNameMaxLength)]
         public string CategoryName { get; set; } = null!;
     }
 }

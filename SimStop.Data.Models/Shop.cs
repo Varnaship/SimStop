@@ -11,7 +11,7 @@ namespace SimStop.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(ShopNameMaxLenght)]
+        [MaxLength(ShopNameMaxLength)]
         public string ShopName { get; set; } = null!;
 
         [Required]

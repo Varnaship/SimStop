@@ -2,26 +2,26 @@
 {
     public static class DatabaseConstants
     {
-        public const int BrandNameMaxLenght = 10;
-        public const int BrandNameMinLenght = 10;
+        public const int BrandNameMaxLength = 50;
+        public const int BrandNameMinLength = 3;
 
-        public const int BrandDescriptionMaxLenght = 20;
-        public const int BrandDescriptionMinLenght = 10;
+        public const int BrandDescriptionMaxLength = 200;
+        public const int BrandDescriptionMinLength = 10;
 
-        public const int CategoryNameMaxLenght = 20;
-        public const int CategoryNameMinLenght = 10;
+        public const int CategoryNameMaxLength = 50;
+        public const int CategoryNameMinLength = 3;
 
-        public const int LocationNameMaxLenght = 20;
-        public const int LocationNameMinLenght = 10;
+        public const int LocationNameMaxLength = 50;
+        public const int LocationNameMinLength = 3;
 
-        public const int ProductNameMaxLenght = 20;
-        public const int ProductNameMinLenght = 10;
+        public const int ProductNameMaxLength = 50;
+        public const int ProductNameMinLength = 3;
 
-        public const int ProductDescriptioneMaxLenght = 20;
-        public const int ProductDescriptioneMinLenght = 10;
+        public const int ProductDescriptionMaxLength = 200;
+        public const int ProductDescriptionMinLength = 10;
 
-        public const int ShopNameMaxLenght = 20;
-        public const int ShopNameMinLenght = 10;
+        public const int ShopNameMaxLength = 50;
+        public const int ShopNameMinLength = 3;
 
         public const string BrandFoundedOnFormat = "MMMM yyyy";
 

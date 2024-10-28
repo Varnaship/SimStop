@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
+using SimStop.Data.Models;
 
 namespace SimStop
 {
@@ -15,7 +16,7 @@ namespace SimStop
             
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString,
-                    b => b.MigrationsAssembly("SimStop.Data.SimStop.Data")));
+                    b => b.MigrationsAssembly("SimStop.Web")));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

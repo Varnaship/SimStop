@@ -9,7 +9,7 @@ namespace SimStop.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(LocationNameMaxLenght)]
+        [MaxLength(LocationNameMaxLength)]
         public string LocationName { get; set; } = null!;
     }
 }

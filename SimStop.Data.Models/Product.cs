@@ -11,11 +11,11 @@ namespace SimStop.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(ProductNameMaxLenght)]
+        [MaxLength(ProductNameMaxLength)]
         public string Name { get; set; } = null!;
 
         [Required]
-        [MaxLength(ProductDescriptioneMaxLenght)]
+        [MaxLength(ProductDescriptionMaxLength)]
         public string Description { get; set; } = null!;
 
         [Required]
