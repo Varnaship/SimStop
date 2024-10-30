@@ -23,6 +23,12 @@
         public const int ShopNameMaxLength = 50;
         public const int ShopNameMinLength = 3;
 
+        public const int BundleNameMaxLength = 50;
+        public const int BundleNameMinLength = 3;
+
+        public const double ShopProductDiscountMaxValue = 100.0;
+        public const double ShopProductDiscountMinValue = 0.0;
+
         public const string BrandFoundedOnFormat = "MMMM yyyy";
 
         public const string ProductReleaseDateFormat = "d MMM yyyy";

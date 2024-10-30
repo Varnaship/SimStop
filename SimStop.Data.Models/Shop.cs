@@ -20,7 +20,7 @@ namespace SimStop.Data.Models
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; } = null!;
 
-        public IList<Product> Products { get; set; } = new List<Product>();
+        public ICollection<Product> Products { get; set; } = new List<Product>();
 
     }
 }

@@ -28,12 +28,14 @@ namespace SimStop.Data
             new Category { Id = 7,CategoryName = "Sequential Shifter" },
             new Category { Id = 8,CategoryName = "H-Patern Shifter" });
         }
-        //TODO : Add Bundels
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ProductCustomer> ProductsCustomers { get; set; }
+        public DbSet<Bundle> Bundles { get; set; }
+        public DbSet<BundleProduct> BundlesProducts { get; set; }
+        public DbSet<ShopProductDiscount> ShopsProductsDiscounts { get; set; }
     }
 }
