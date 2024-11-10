@@ -11,12 +11,12 @@ namespace SimStop.Data.Models
         public int BundleId { get; set; }
 
         [ForeignKey(nameof(BundleId))]
-        public Bundle Bundle { get; set; }
+        public Bundle Bundle { get; set; } = null!;
 
         [Required]
         public int ProductId { get; set; }
 
         [ForeignKey(nameof(ProductId))]
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
     }
 }
