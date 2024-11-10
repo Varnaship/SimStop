@@ -44,5 +44,9 @@ namespace SimStop.Data.Models
 
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; } = null!;
+
+        public bool IsDeleted { get; set; }
+
+        public IList<ProductCustomer> ProductsClients { get; set; } = new List<ProductCustomer>();
     }
 }
