@@ -12,7 +12,7 @@ using SimStop.Data;
 namespace SimStop.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241028101505_Initial")]
+    [Migration("20241110124652_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -237,20 +237,56 @@ namespace SimStop.Web.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("FoundedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.Bundle", b =>
+                {
+                    b.Property<int>("BundleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BundleId"));
+
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("BundleId");
+
+                    b.ToTable("Bundles");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.BundleProduct", b =>
+                {
+                    b.Property<int>("BundleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BundleId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("BundlesProducts");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Category", b =>
@@ -263,12 +299,54 @@ namespace SimStop.Web.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryName = "Wheel"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryName = "Handbrake"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryName = "Wheel Base"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryName = "Pedals"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryName = "Loadcell Pedals"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryName = "Direct-Drive Wheel Base"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryName = "Sequential Shifter"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryName = "H-Patern Shifter"
+                        });
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Location", b =>
@@ -281,8 +359,8 @@ namespace SimStop.Web.Migrations
 
                     b.Property<string>("LocationName")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -305,16 +383,16 @@ namespace SimStop.Web.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -369,14 +447,32 @@ namespace SimStop.Web.Migrations
 
                     b.Property<string>("ShopName")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
                     b.ToTable("Shops");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.ShopProductDiscount", b =>
+                {
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.HasKey("ShopId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ShopsProductsDiscounts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -428,6 +524,25 @@ namespace SimStop.Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.BundleProduct", b =>
+                {
+                    b.HasOne("SimStop.Data.Models.Bundle", "Bundle")
+                        .WithMany()
+                        .HasForeignKey("BundleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bundle");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Product", b =>
@@ -489,6 +604,25 @@ namespace SimStop.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.ShopProductDiscount", b =>
+                {
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimStop.Data.Models.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>

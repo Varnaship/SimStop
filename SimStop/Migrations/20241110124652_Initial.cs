@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SimStop.Web.Migrations
 {
     /// <inheritdoc />
@@ -56,8 +58,8 @@ namespace SimStop.Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FoundedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -66,12 +68,26 @@ namespace SimStop.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bundles",
+                columns: table => new
+                {
+                    BundleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Discount = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bundles", x => x.BundleId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    CategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,7 +100,7 @@ namespace SimStop.Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LocationName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    LocationName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,7 +219,7 @@ namespace SimStop.Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ShopName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ShopName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -223,8 +239,8 @@ namespace SimStop.Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
@@ -262,6 +278,30 @@ namespace SimStop.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BundlesProducts",
+                columns: table => new
+                {
+                    BundleId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BundlesProducts", x => new { x.BundleId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_BundlesProducts_Bundles_BundleId",
+                        column: x => x.BundleId,
+                        principalTable: "Bundles",
+                        principalColumn: "BundleId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BundlesProducts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductsCustomers",
                 columns: table => new
                 {
@@ -283,6 +323,46 @@ namespace SimStop.Web.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopsProductsDiscounts",
+                columns: table => new
+                {
+                    ShopId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Discount = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopsProductsDiscounts", x => new { x.ShopId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_ShopsProductsDiscounts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShopsProductsDiscounts_Shops_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "CategoryName" },
+                values: new object[,]
+                {
+                    { 1, "Wheel" },
+                    { 2, "Handbrake" },
+                    { 3, "Wheel Base" },
+                    { 4, "Pedals" },
+                    { 5, "Loadcell Pedals" },
+                    { 6, "Direct-Drive Wheel Base" },
+                    { 7, "Sequential Shifter" },
+                    { 8, "H-Patern Shifter" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -325,6 +405,11 @@ namespace SimStop.Web.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BundlesProducts_ProductId",
+                table: "BundlesProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",
                 table: "Products",
                 column: "BrandId");
@@ -353,6 +438,11 @@ namespace SimStop.Web.Migrations
                 name: "IX_Shops_LocationId",
                 table: "Shops",
                 column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopsProductsDiscounts_ProductId",
+                table: "ShopsProductsDiscounts",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -374,10 +464,19 @@ namespace SimStop.Web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BundlesProducts");
+
+            migrationBuilder.DropTable(
                 name: "ProductsCustomers");
 
             migrationBuilder.DropTable(
+                name: "ShopsProductsDiscounts");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Bundles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
