@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
+using SimStop.Data.Models;
 using SimStop.Web.Models;
 using SimStop.Web.Models.Configuration;
 
@@ -15,7 +16,7 @@ namespace SimStop.Web.Controllers
         {
             context = _context;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -56,6 +57,41 @@ namespace SimStop.Web.Controllers
             }
 
             return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var model = 1;
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var model = 1;
+            return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete()
+        {
+            var model = 1;
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var model = 1;
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(int id)
+        {
+            var model = 1;
+            return View(model);
+        }
+        private async Task<List<Category>> GetCategories()
+        {
+            return await context.Categories
+                .ToListAsync();
         }
     }
 }
