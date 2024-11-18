@@ -9,7 +9,7 @@ namespace SimStop.Data.Models
         public int BundleId { get; set; }
         [Required]
         [MaxLength(BundleNameMaxLength)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         [Required]
         public double Discount { get; set; }
         public ICollection<Product> Products = new List<Product>();
