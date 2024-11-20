@@ -33,4 +33,8 @@
     <ProjectReference Include="..\SimStop.Web.ViewModels\SimStop.Web.ViewModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Configuration\" />
+  </ItemGroup>
+
 </Project>

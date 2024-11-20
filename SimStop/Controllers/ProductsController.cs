@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
 using SimStop.Data.Models;
 using SimStop.Web.Models;
-using SimStop.Web.Models.Configuration;
 
 namespace SimStop.Web.Controllers
 {
@@ -43,9 +42,15 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var model = await context.Products
-                .Where(g => g.IsDeleted != true && g.Id == id)
-                .Select(g => new ProductDetailsViewModel()
+                .Where(p => p.IsDeleted != true && p.Id == id)
+                .Select(p => new ProductDetailsViewModel()
                 {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    BrandId = p.BrandId,
+                    Description = p.Description,
+                    ReleaseDate = p.ReleaseDate.ToString(),
                     
                 })
                 .AsNoTracking()
@@ -91,6 +96,16 @@ namespace SimStop.Web.Controllers
         private async Task<List<Category>> GetCategories()
         {
             return await context.Categories
+                .ToListAsync();
+        }
+        private async Task<List<Location>> GetLocations()
+        {
+            return await context.Locations
+                .ToListAsync();
+        }
+        private async Task<List<Brand>> GetBrands()
+        {
+            return await context.Brands
                 .ToListAsync();
         }
     }
