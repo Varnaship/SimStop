@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimStop.Data;
 
@@ -11,9 +12,11 @@ using SimStop.Data;
 namespace SimStop.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241120162428_AddIsDeletedColumnToProducts")]
+    partial class AddIsDeletedColumnToProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,43 +251,6 @@ namespace SimStop.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Known for their G-series racing wheels and accessories.",
-                            FoundedOn = new DateTime(1981, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Logitech G"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "A leading manufacturer of racing wheels, pedals, and accessories.",
-                            FoundedOn = new DateTime(1993, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Thrustmaster"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Offers high-end sim racing equipment, including steering wheels, pedals, and seats.",
-                            FoundedOn = new DateTime(2005, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Fanatec"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "A premium force feedback system used by professional and serious sim racers.",
-                            FoundedOn = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Simucube"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Specializes in racing simulators, seats, and stands.",
-                            FoundedOn = new DateTime(2003, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Playseat"
-                        });
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Bundle", b =>
@@ -399,33 +365,6 @@ namespace SimStop.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LocationName = "Sofia"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LocationName = "Plovdiv"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LocationName = "Varna"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LocationName = "Burgas"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LocationName = "Ruse"
-                        });
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Product", b =>

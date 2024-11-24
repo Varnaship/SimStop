@@ -13,3 +13,4 @@ namespace SimStop.Data.Models
         public string LocationName { get; set; } = null!;
     }
 }
+    

@@ -1,0 +1,26 @@
+﻿@model SimStop.Web.Models.ProductDetailsViewModel
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1>@Model.Name</h1>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Release Date:</strong> @Model.ReleaseDate</p>
+        <p><strong>Weight:</strong> @Model.Weight kg</p>
+        <p><strong>Brand:</strong> @Model.BrandName</p>
+        <p><strong>Category:</strong> @Model.CategoryName</p>
+        <p><strong>Location:</strong> @Model.LocationName</p>
+    </div>
+    <div class="card-footer">
+        <form asp-action="AddToCart" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+        <a asp-action="Index" class="btn btn-secondary">Back to Products</a>
+    </div>
+</div>

@@ -4,26 +4,14 @@ namespace SimStop.Web.Models
 {
     public class ProductDetailsViewModel
     {
-        public required int Id { get; set; }
-
-        public required string Name { get; set; }
-        public required string Description { get; set; } 
-        public required string ReleaseDate { get; set; } = DateTime.Today.ToString(ProductReleaseDateFormat);
-
-        public required decimal Price { get; set; }
-
-        public required double Weight { get; set; }
-
-        public required int CategoryId { get; set; }
-
-        public required int BrandId { get; set; }
-
-        public required Brand Brand { get; set; } = null!;
-
-        public required int LocationId { get; set; }
-
-        public required Location Location { get; set; } = null!;
-        public bool HasBought { get; set; }
-        public List<Category> Categories { get; set; } = new List<Category>();
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+        public decimal Price { get; set; }
+        public string Description { get; set; } = null!;
+        public string ReleaseDate { get; set; } = null!;
+        public string BrandName { get; set; } = null!;
+        public string CategoryName { get; set; } = null!;
+        public string LocationName { get; set; } = null!;
+        public double Weight { get; set; }
     }
 }

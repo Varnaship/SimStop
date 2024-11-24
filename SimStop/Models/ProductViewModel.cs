@@ -5,17 +5,11 @@ namespace SimStop.Web.Models
 {
     public class ProductViewModel
     {
-        public required int Id { get; set; }
-
-        public required string Name { get; set; } = null!;
-
-        public required string Description { get; set; } = null!;
-
-        public required string ReleaseDate { get; set; } = DateTime.Today.ToString(ProductReleaseDateFormat);
-
-        public required decimal Price { get; set; }
-
-        public required int BrandId { get; set; }
-
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+        public decimal Price { get; set; }
+        public int BrandId { get; set; }
+        public string Description { get; set; } = null!;
+        public string ReleaseDate { get; set; } = null!;
     }
 }
