@@ -1,7 +1,7 @@
 ﻿using SimStop.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SimStop.Web.Models
+namespace SimStop.Web.Models.Product
 {
     public class ProductEditViewModel
     {

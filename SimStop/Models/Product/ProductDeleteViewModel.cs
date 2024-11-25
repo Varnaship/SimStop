@@ -1,4 +1,4 @@
-﻿namespace SimStop.Web.Models
+﻿namespace SimStop.Web.Models.Product
 {
     public class ProductDeleteViewModel
     {

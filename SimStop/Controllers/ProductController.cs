@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DeskMarket.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
 using SimStop.Data.Models;
-using SimStop.Web.Models;
+using SimStop.Web.Models.Product;
 using System.Globalization;
 
 namespace SimStop.Web.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly ApplicationDbContext context;
 
@@ -20,17 +21,17 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var model = await context.Products
-                .Where(p => !p.IsDeleted)
-                .Select(p => new ProductViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy", CultureInfo.InvariantCulture),
-                })
-                .AsNoTracking()
-                .ToListAsync();
+               .Where(p => !p.IsDeleted)
+               .Select(p => new ProductViewModel
+               {
+                   Id = p.Id,
+                   Name = p.Name,
+                   Price = p.Price,
+                   Description = p.Description,
+                   ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy", CultureInfo.InvariantCulture),
+               })
+               .AsNoTracking()
+               .ToListAsync();
 
             return View(model);
         }
@@ -153,10 +154,5 @@ namespace SimStop.Web.Controllers
             return await context.Categories.ToListAsync();
         }
 
-        private string GetUserId()
-        {
-            // Replace with actual logic for getting user ID
-            return User?.Identity?.Name ?? "anonymous-user-id";
-        }
     }
 }
