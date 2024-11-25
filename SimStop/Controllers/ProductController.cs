@@ -131,11 +131,13 @@ namespace SimStop.Web.Controllers
         {
             var userId = GetUserId();
 
+            // Check if the product is already in the cart
             var existingCartItem = await context.ProductsCustomers
                 .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
 
             if (existingCartItem == null)
             {
+                // If not, add a new item
                 var newProductClient = new ProductCustomer
                 {
                     ProductId = id,
@@ -146,8 +148,10 @@ namespace SimStop.Web.Controllers
                 await context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            // Redirect to Cart/Index after adding
+            return RedirectToAction("Index", "Cart");
         }
+
 
         private async Task<List<Category>> GetCategories()
         {

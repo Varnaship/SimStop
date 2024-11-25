@@ -1,7 +1,10 @@
 ﻿@{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Order Confirmation";
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>Thank you for your purchase! Your order is being processed.</p>
+
+<p>Thank you for your purchase!</p>
+<p><strong>Total Amount Paid:</strong> @TempData["TotalValue"]</p>
+
 <a asp-action="Index" asp-controller="Product" class="btn btn-primary">Continue Shopping</a>
