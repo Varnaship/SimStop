@@ -19,6 +19,8 @@ namespace SimStop.Data.Models
 
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; } = null!;
+        [Required]
+        public decimal TotalRevenue { get; set; }
 
         public ICollection<Product> Products { get; set; } = new List<Product>();
 

@@ -8,14 +8,9 @@ using System.Globalization;
 
 namespace SimStop.Web.Controllers
 {
-    public class ProductController : BaseController
+    public class ProductController(ApplicationDbContext context) : BaseController
     {
-        private readonly ApplicationDbContext context;
 
-        public ProductController(ApplicationDbContext _context)
-        {
-            context = _context;
-        }
 
         [HttpGet]
         public async Task<IActionResult> Index()

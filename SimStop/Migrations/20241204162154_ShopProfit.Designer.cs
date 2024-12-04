@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimStop.Data;
 
@@ -11,9 +12,11 @@ using SimStop.Data;
 namespace SimStop.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241204162154_ShopProfit")]
+    partial class ShopProfit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,7 +250,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
 
                     b.HasData(
                         new
@@ -305,7 +308,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasKey("BundleId");
 
-                    b.ToTable("Bundles", (string)null);
+                    b.ToTable("Bundles");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.BundleProduct", b =>
@@ -320,7 +323,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BundlesProducts", (string)null);
+                    b.ToTable("BundlesProducts");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Category", b =>
@@ -338,7 +341,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -398,7 +401,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locations", (string)null);
+                    b.ToTable("Locations");
 
                     b.HasData(
                         new
@@ -480,7 +483,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
@@ -562,7 +565,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("ProductsCustomers", (string)null);
+                    b.ToTable("ProductsCustomers");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>
@@ -588,7 +591,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("Shops", (string)null);
+                    b.ToTable("Shops");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.ShopProductDiscount", b =>
@@ -606,7 +609,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ShopsProductsDiscounts", (string)null);
+                    b.ToTable("ShopsProductsDiscounts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

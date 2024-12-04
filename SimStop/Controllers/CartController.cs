@@ -2,19 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
+using SimStop.Data.Models;
 using SimStop.Web.ViewModels;
 
 namespace SimStop.Web.Controllers
 {
-    public class CartController : BaseController
+    public class CartController(ApplicationDbContext _context) : BaseController
     {
-        private readonly ApplicationDbContext _context;
-
-        public CartController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -58,6 +52,7 @@ namespace SimStop.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         public async Task<IActionResult> Checkout()
         {
@@ -67,7 +62,7 @@ namespace SimStop.Web.Controllers
             var cartItems = await _context.ProductsCustomers
                 .Where(pc => pc.CustomerId == userId)
                 .Include(pc => pc.Product)
-                .ThenInclude(p => p.Brand) // Assuming Brand has a Shop
+                .ThenInclude(p => p.Brand) // Assuming Brand is related to a Shop
                 .ToListAsync();
 
             if (!cartItems.Any())
@@ -85,13 +80,11 @@ namespace SimStop.Web.Controllers
                 // Accumulate total cart value
                 totalValue += product.Price;
 
-                // Allocate income to the shop's moderator (owner)
-                var shopOwnerId = product.Brand.ModeratorId; // Assuming Brand has a ModeratorId
-                var moderator = await _context.Moderators.FindAsync(shopOwnerId);
-
-                if (moderator != null)
+                // Allocate income to the shop owner
+                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == product.BrandId);
+                if (shop != null)
                 {
-                    moderator.Income += product.Price;
+                    shop.TotalRevenue += product.Price;
                 }
             }
 
@@ -108,5 +101,11 @@ namespace SimStop.Web.Controllers
             return RedirectToAction("Confirmation");
         }
 
+        [HttpGet]
+        public IActionResult Confirmation()
+        {
+            ViewBag.TotalValue = TempData["TotalValue"] ?? "0.00";
+            return View();
+        }
     }
 }

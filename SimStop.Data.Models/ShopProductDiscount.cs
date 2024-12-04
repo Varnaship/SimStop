@@ -12,13 +12,13 @@ namespace SimStop.Data.Models
         public int ShopId { get; set; }
 
         [ForeignKey(nameof(ShopId))]
-        public Shop Shop { get; set; }
+        public Shop Shop { get; set; }  = null!;
 
         [Required]
         public int ProductId { get; set; }
 
         [ForeignKey(nameof(ProductId))]
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
 
         [Required]
         public double Discount { get; set; }
