@@ -124,28 +124,46 @@ namespace SimStop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(int id)
         {
-            var userId = GetUserId();
-
-            // Check if the product is already in the cart
-            var existingCartItem = await context.ProductsCustomers
-                .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
-
-            if (existingCartItem == null)
+            try
             {
-                // If not, add a new item
-                var newProductClient = new ProductCustomer
+                var userId = GetUserId();
+
+                // Check if the product exists
+                var productExists = await context.Products
+                    .AnyAsync(p => p.Id == id && !p.IsDeleted);
+
+                if (!productExists)
                 {
-                    ProductId = id,
-                    CustomerId = userId
-                };
+                    return NotFound("Product does not exist.");
+                }
 
-                await context.ProductsCustomers.AddAsync(newProductClient);
-                await context.SaveChangesAsync();
+                // Check if the product is already in the cart
+                var existingCartItem = await context.ProductsCustomers
+                    .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
+
+                if (existingCartItem == null)
+                {
+                    // Add the product to the cart
+                    var newProductClient = new ProductCustomer
+                    {
+                        ProductId = id,
+                        CustomerId = userId
+                    };
+
+                    await context.ProductsCustomers.AddAsync(newProductClient);
+                    await context.SaveChangesAsync();
+                }
+
+                return Json(new { success = true, message = "Product added to cart." });
             }
-
-            // Redirect to Cart/Index after adding
-            return RedirectToAction("Index", "Cart");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding product to cart: {ex.Message}");
+                return StatusCode(500, "An error occurred while adding the product to the cart.");
+            }
         }
+
+
 
 
         private async Task<List<Category>> GetCategories()

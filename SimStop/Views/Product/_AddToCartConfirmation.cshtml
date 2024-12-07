@@ -1,0 +1,19 @@
+﻿@model SimStop.Web.Models.Product.ProductViewModel
+
+<div class="alert alert-success">
+    <strong>@Model.Name</strong> has been added to your cart.
+    <div>
+        <button class="btn btn-primary" onclick="goToCart()">Go to Cart</button>
+        <button class="btn btn-secondary" onclick="closeMessage()">Continue Shopping</button>
+    </div>
+</div>
+
+<script>
+    function goToCart() {
+        window.location.href = '/Cart/Index';
+    }
+
+    function closeMessage() {
+        document.getElementById("cart-message").innerHTML = "";
+    }
+</script>
