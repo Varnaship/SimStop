@@ -1,19 +1,18 @@
-﻿@model SimStop.Web.Models.Product.ProductViewModel
+﻿@using SimStop.Web.Models.Product
+@model dynamic
 
-<div class="alert alert-success">
-    <strong>@Model.Name</strong> has been added to your cart.
-    <div>
-        <button class="btn btn-primary" onclick="goToCart()">Go to Cart</button>
-        <button class="btn btn-secondary" onclick="closeMessage()">Continue Shopping</button>
-    </div>
+<div>
+    <h2>@Model.product.Name</h2>
+    <p>Price: @Model.product.Price.ToString("C")</p>
+    @if (Model.success)
+    {
+        <button type="button" class="btn btn-primary">Continue Shopping</button>
+        <button type="button" class="btn btn-success">Go to Cart</button>
+    }
+    else
+    {
+        <p class="text-danger">@Model.message</p>
+        <button type="button" class="btn btn-primary">Continue Shopping</button>
+    }
 </div>
 
-<script>
-    function goToCart() {
-        window.location.href = '/Cart/Index';
-    }
-
-    function closeMessage() {
-        document.getElementById("cart-message").innerHTML = "";
-    }
-</script>

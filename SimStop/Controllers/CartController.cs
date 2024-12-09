@@ -14,23 +14,23 @@ namespace SimStop.Web.Controllers
         {
             var userId = GetUserId();
 
-            var cartItems = await _context.ProductsCustomers
+            var cartItems = await _context.ShopsCustomers
                 .Where(pc => pc.CustomerId == userId)
                 .Include(pc => pc.Product)
-                .Select(pc => new CartItemViewModel
-                {
-                    Id = pc.Product.Id,
-                    ProductName = pc.Product.Name,
-                    ImageUrl = "/images/products/default.jpg", // Replace with your logic for image paths
-                    Price = pc.Product.Price,
-                    Quantity = 1 // Assuming 1 item per product for simplicity
-                })
+                    .ThenInclude(p => p.ShopProducts)
                 .ToListAsync();
 
             var cartViewModel = new CartViewModel
             {
-                Items = cartItems,
-                TotalValue = cartItems.Sum(item => item.Price * item.Quantity)
+                Items = cartItems.Select(pc => new CartItemViewModel
+                {
+                    Id = pc.Product.Id,
+                    ProductName = pc.Product.Name,
+                    ImageUrl = "/images/products/default.jpg", // Replace with your logic for image paths
+                    Price = CalculateDiscountedPrice(pc.Product, pc.ShopId),
+                    Quantity = 1 // Assuming 1 item per product for simplicity
+                }).ToList(),
+                TotalValue = cartItems.Sum(pc => CalculateDiscountedPrice(pc.Product, pc.ShopId))
             };
 
             return View(cartViewModel);
@@ -41,12 +41,12 @@ namespace SimStop.Web.Controllers
         {
             var userId = GetUserId();
 
-            var productCustomer = await _context.ProductsCustomers
+            var productCustomer = await _context.ShopsCustomers
                 .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
 
             if (productCustomer != null)
             {
-                _context.ProductsCustomers.Remove(productCustomer);
+                _context.ShopsCustomers.Remove(productCustomer);
                 await _context.SaveChangesAsync();
             }
 
@@ -59,10 +59,10 @@ namespace SimStop.Web.Controllers
             var userId = GetUserId();
 
             // Fetch cart items for the user
-            var cartItems = await _context.ProductsCustomers
+            var cartItems = await _context.ShopsCustomers
                 .Where(pc => pc.CustomerId == userId)
                 .Include(pc => pc.Product)
-                .ThenInclude(p => p.Brand) // Assuming Brand is related to a Shop
+                    .ThenInclude(p => p.ShopProducts)
                 .ToListAsync();
 
             if (!cartItems.Any())
@@ -78,13 +78,14 @@ namespace SimStop.Web.Controllers
                 var product = item.Product;
 
                 // Accumulate total cart value
-                totalValue += product.Price;
+                var discountedPrice = CalculateDiscountedPrice(product, item.ShopId);
+                totalValue += discountedPrice;
 
                 // Allocate income to the shop owner
-                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == product.BrandId);
+                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == item.ShopId);
                 if (shop != null)
                 {
-                    shop.TotalRevenue += product.Price;
+                    shop.TotalRevenue += discountedPrice;
                 }
             }
 
@@ -92,7 +93,7 @@ namespace SimStop.Web.Controllers
             await _context.SaveChangesAsync();
 
             // Clear the cart for the user
-            _context.ProductsCustomers.RemoveRange(cartItems);
+            _context.ShopsCustomers.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
 
             // Pass totalValue to the confirmation view
@@ -106,6 +107,18 @@ namespace SimStop.Web.Controllers
         {
             ViewBag.TotalValue = TempData["TotalValue"] ?? "0.00";
             return View();
+        }
+
+        private static decimal CalculateDiscountedPrice(Product product, int shopId)
+        {
+            var shopProduct = product.ShopProducts.FirstOrDefault(sp => sp.ShopId == shopId);
+            if (shopProduct != null)
+            {
+                var discount = shopProduct.Discount;
+                return product.Price * (1 - (decimal)discount / 100);
+            }
+
+            return product.Price;
         }
     }
 }

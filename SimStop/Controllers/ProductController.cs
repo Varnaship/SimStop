@@ -5,13 +5,12 @@ using SimStop.Data;
 using SimStop.Data.Models;
 using SimStop.Web.Models.Product;
 using System.Globalization;
+using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Controllers
 {
     public class ProductController(ApplicationDbContext context) : BaseController
     {
-
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -23,7 +22,7 @@ namespace SimStop.Web.Controllers
                    Name = p.Name,
                    Price = p.Price,
                    Description = p.Description,
-                   ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy", CultureInfo.InvariantCulture),
+                   ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
                })
                .AsNoTracking()
                .ToListAsync();
@@ -42,7 +41,7 @@ namespace SimStop.Web.Controllers
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy", CultureInfo.InvariantCulture),
+                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
                     Weight = p.Weight,
                     BrandName = p.Brand.Name,
                     CategoryName = p.Category.CategoryName,
@@ -77,14 +76,13 @@ namespace SimStop.Web.Controllers
                 Name = product.Name,
                 Price = product.Price,
                 Description = product.Description,
-                AddedOn = product.ReleaseDate.ToString("d MMM yyyy"),
+                AddedOn = product.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
                 CategoryId = product.CategoryId,
                 Categories = await GetCategories()
             };
 
             return View(model);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Edit(ProductEditViewModel model)
@@ -96,7 +94,7 @@ namespace SimStop.Web.Controllers
                 return View(model);
             }
 
-            if (!DateTime.TryParseExact(model.AddedOn, "d MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
+            if (!DateTime.TryParseExact(model.AddedOn, ProductReleaseDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
             {
                 ModelState.AddModelError(nameof(model.AddedOn), "Invalid date or time format");
                 return View(model);
@@ -119,8 +117,6 @@ namespace SimStop.Web.Controllers
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> AddToCart(int id)
         {
@@ -138,19 +134,19 @@ namespace SimStop.Web.Controllers
                 }
 
                 // Check if the product is already in the cart
-                var existingCartItem = await context.ProductsCustomers
+                var existingCartItem = await context.ShopsCustomers
                     .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
 
                 if (existingCartItem == null)
                 {
                     // Add the product to the cart
-                    var newProductClient = new ProductCustomer
+                    var newProductClient = new ShopCustomer
                     {
                         ProductId = id,
                         CustomerId = userId
                     };
 
-                    await context.ProductsCustomers.AddAsync(newProductClient);
+                    await context.ShopsCustomers.AddAsync(newProductClient);
                     await context.SaveChangesAsync();
                 }
 
@@ -163,13 +159,9 @@ namespace SimStop.Web.Controllers
             }
         }
 
-
-
-
         private async Task<List<Category>> GetCategories()
         {
             return await context.Categories.ToListAsync();
         }
-
     }
 }
