@@ -1,0 +1,27 @@
+﻿@model SimStop.Web.Models.Shop.ShopDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Shop";
+}
+
+<h1>Delete Shop</h1>
+
+<h4>Shop</h4>
+<hr />
+<div>
+    <h4>Are you sure you want to delete this?</h4>
+    <dl class="row">
+        <dt class="col-sm-2">
+            Shop Name
+        </dt>
+        <dd class="col-sm-10">
+            @Model.ShopName
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-primary">Back to List</a>
+    </form>
+</div>

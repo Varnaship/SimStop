@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SimStop.Web.Models.Shop.ShopViewModel>
+
+@{
+    ViewData["Title"] = "Shops";
+}
+
+<h1>Shops</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Shop</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Shop Name</th>
+            <th>Location</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var shop in Model)
+        {
+            <tr>
+                <td>@shop.ShopName</td>
+                <td>@shop.LocationName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@shop.Id" class="btn btn-info">Details</a>
+                    <a asp-action="Index" asp-controller="ShopProducts" asp-route-shopId="@shop.Id" class="btn btn-info">View Shop</a>
+                    @if (shop.IsOwner)
+                    {
+                        <a asp-action="Edit" asp-route-id="@shop.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@shop.Id" class="btn btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

@@ -1,0 +1,41 @@
+﻿@model SimStop.Web.Models.Shop.ShopDetailsViewModel
+
+@{
+    ViewData["Title"] = "Shop Details";
+}
+
+<h1>Shop Details</h1>
+
+<div>
+    <h4>Shop</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Shop Name
+        </dt>
+        <dd class="col-sm-10">
+            @Model.ShopName
+        </dd>
+        <dt class="col-sm-2">
+            Location
+        </dt>
+        <dd class="col-sm-10">
+            @Model.LocationName
+        </dd>
+        @if (Model.IsOwner)
+        {
+            <dt class="col-sm-2">
+                Total Revenue
+            </dt>
+            <dd class="col-sm-10">
+                @Model.TotalRevenue
+            </dd>
+        }
+    </dl>
+</div>
+
+<p>
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</p>
+
+
