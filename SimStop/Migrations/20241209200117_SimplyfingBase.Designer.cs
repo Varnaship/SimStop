@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimStop.Data;
 
@@ -11,9 +12,11 @@ using SimStop.Data;
 namespace SimStop.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209200117_SimplyfingBase")]
+    partial class SimplyfingBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,15 +146,15 @@ namespace SimStop.Web.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d29e9bf1-2de2-425d-abbd-a8a78ec730dc",
+                            ConcurrencyStamp = "8c2b35e2-8c8e-45d4-bd38-4b6d6a6bdad6",
                             Email = "Kris@SimStop.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KRIS@SIMSTOP.COM",
                             NormalizedUserName = "KRIS@SIMSTOP.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELRrB+QqeNgeJeUx76RiHKddVeulDJP1lZb31nVfNWrjOXra7xmkqgbj2uT/kP2Umw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBo7dXjyvvgjg8WIZqJM1p1yfV5j6Hlc4XxLOEwCaaJsKnGznm5wIJyAEYOjMs+AFw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "adee71ec-ef74-48d2-a00d-bd3c5e805559",
+                            SecurityStamp = "3ecabd02-3160-4a87-bffc-2f901a695574",
                             TwoFactorEnabled = false,
                             UserName = "Kris@SimStop.com"
                         },
@@ -159,15 +162,15 @@ namespace SimStop.Web.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "48b745b5-6061-4127-b671-eb31b043722a",
+                            ConcurrencyStamp = "60a7085d-510a-48f4-845b-07e9a0ffbe29",
                             Email = "Kris2@SimStop.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KRIS2@SIMSTOP.COM",
                             NormalizedUserName = "KRIS2@SIMSTOP.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHWp6+WZrPLkqGPLdm116wH9XRPJtK/5Niy2rb4ooWLn5KNATAd2gc9vDdH3rpGoaw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG+LY+s2Ap9MaG0zV5iP/1o6dSbFxXMto+w7oLjYXxiu82hCjTLIZrWjvWUtaialmw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "797ccb01-8976-43d3-8d9a-0d5d2fc68cb2",
+                            SecurityStamp = "508cece4-9652-471e-8336-74e53562f76d",
                             TwoFactorEnabled = false,
                             UserName = "Kris2@SimStop.com"
                         });
@@ -579,6 +582,21 @@ namespace SimStop.Web.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SimStop.Data.Models.ProductCustomer", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProductId", "CustomerId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("ProductsCustomers");
+                });
+
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
@@ -609,26 +627,6 @@ namespace SimStop.Web.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Shops");
-                });
-
-            modelBuilder.Entity("SimStop.Data.Models.ShopCustomer", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "CustomerId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ShopsCustomers");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.ShopProduct", b =>
@@ -746,6 +744,25 @@ namespace SimStop.Web.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SimStop.Data.Models.ProductCustomer", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Product", "Product")
+                        .WithMany("ProductsClients")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>
                 {
                     b.HasOne("SimStop.Data.Models.Location", "Location")
@@ -763,33 +780,6 @@ namespace SimStop.Web.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("SimStop.Data.Models.ShopCustomer", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Product", "Product")
-                        .WithMany("ProductsClients")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SimStop.Data.Models.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.ShopProduct", b =>

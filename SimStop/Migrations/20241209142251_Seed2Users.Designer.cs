@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimStop.Data;
 
@@ -11,9 +12,11 @@ using SimStop.Data;
 namespace SimStop.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209142251_Seed2Users")]
+    partial class Seed2Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,15 +146,15 @@ namespace SimStop.Web.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d29e9bf1-2de2-425d-abbd-a8a78ec730dc",
+                            ConcurrencyStamp = "6275f769-5f4e-42d4-a833-91897f274825",
                             Email = "Kris@SimStop.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KRIS@SIMSTOP.COM",
                             NormalizedUserName = "KRIS@SIMSTOP.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELRrB+QqeNgeJeUx76RiHKddVeulDJP1lZb31nVfNWrjOXra7xmkqgbj2uT/kP2Umw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECv/kliZV0C4+bwsOsRy/Uj2qr8k3XGFvK+JJsTlYCvVERbOLHw3rOesy0La+s7mwA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "adee71ec-ef74-48d2-a00d-bd3c5e805559",
+                            SecurityStamp = "58136cbf-a1d3-48ad-9ae8-fe1ce27547f7",
                             TwoFactorEnabled = false,
                             UserName = "Kris@SimStop.com"
                         },
@@ -159,15 +162,15 @@ namespace SimStop.Web.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "48b745b5-6061-4127-b671-eb31b043722a",
+                            ConcurrencyStamp = "f31f94d3-45c2-4e36-a5b9-e97773a82f12",
                             Email = "Kris2@SimStop.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KRIS2@SIMSTOP.COM",
                             NormalizedUserName = "KRIS2@SIMSTOP.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHWp6+WZrPLkqGPLdm116wH9XRPJtK/5Niy2rb4ooWLn5KNATAd2gc9vDdH3rpGoaw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKIt0MOO2v+Z+oEf9w8VyzqvvpIsqRtukRCBCTGy+mmiReS5l3hu76vYhfzbYMBClA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "797ccb01-8976-43d3-8d9a-0d5d2fc68cb2",
+                            SecurityStamp = "ce2dacf0-8366-4f2a-8271-daf9f4c36a11",
                             TwoFactorEnabled = false,
                             UserName = "Kris2@SimStop.com"
                         });
@@ -256,123 +259,6 @@ namespace SimStop.Web.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BrandId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BrandId = 1,
-                            CategoryId = 1,
-                            Description = "High-performance wheel for sim racing enthusiasts.",
-                            IsDeleted = false,
-                            LocationId = 1,
-                            Name = "Fanatec CSL Elite Wheel",
-                            Price = 499.99m,
-                            ReleaseDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Weight = 3.5
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BrandId = 2,
-                            CategoryId = 1,
-                            Description = "Versatile and affordable wheel for sim racers.",
-                            IsDeleted = false,
-                            LocationId = 2,
-                            Name = "Thrustmaster T300 RS",
-                            Price = 399.99m,
-                            ReleaseDate = new DateTime(2020, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Weight = 4.2000000000000002
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BrandId = 3,
-                            CategoryId = 2,
-                            Description = "Precision-engineered pedals for professional sim racers.",
-                            IsDeleted = false,
-                            LocationId = 3,
-                            Name = "Logitech G Pro Pedals",
-                            Price = 299.99m,
-                            ReleaseDate = new DateTime(2021, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Weight = 5.0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BrandId = 4,
-                            CategoryId = 6,
-                            Description = "Compact direct-drive wheel base with high torque.",
-                            IsDeleted = false,
-                            LocationId = 4,
-                            Name = "Simagic Alpha Mini",
-                            Price = 799.99m,
-                            ReleaseDate = new DateTime(2022, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Weight = 6.7999999999999998
-                        },
-                        new
-                        {
-                            Id = 5,
-                            BrandId = 5,
-                            CategoryId = 5,
-                            Description = "High-end loadcell pedals for precise braking.",
-                            IsDeleted = false,
-                            LocationId = 5,
-                            Name = "Heusinkveld Sprint Pedals",
-                            Price = 899.99m,
-                            ReleaseDate = new DateTime(2020, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Weight = 7.2000000000000002
-                        });
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Brand", b =>
@@ -579,6 +465,138 @@ namespace SimStop.Web.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SimStop.Data.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BrandId = 1,
+                            CategoryId = 1,
+                            Description = "High-performance wheel for sim racing enthusiasts.",
+                            IsDeleted = false,
+                            LocationId = 1,
+                            Name = "Fanatec CSL Elite Wheel",
+                            Price = 499.99m,
+                            ReleaseDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weight = 3.5
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BrandId = 2,
+                            CategoryId = 1,
+                            Description = "Versatile and affordable wheel for sim racers.",
+                            IsDeleted = false,
+                            LocationId = 2,
+                            Name = "Thrustmaster T300 RS",
+                            Price = 399.99m,
+                            ReleaseDate = new DateTime(2020, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weight = 4.2000000000000002
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BrandId = 3,
+                            CategoryId = 2,
+                            Description = "Precision-engineered pedals for professional sim racers.",
+                            IsDeleted = false,
+                            LocationId = 3,
+                            Name = "Logitech G Pro Pedals",
+                            Price = 299.99m,
+                            ReleaseDate = new DateTime(2021, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weight = 5.0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BrandId = 4,
+                            CategoryId = 6,
+                            Description = "Compact direct-drive wheel base with high torque.",
+                            IsDeleted = false,
+                            LocationId = 4,
+                            Name = "Simagic Alpha Mini",
+                            Price = 799.99m,
+                            ReleaseDate = new DateTime(2022, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weight = 6.7999999999999998
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BrandId = 5,
+                            CategoryId = 5,
+                            Description = "High-end loadcell pedals for precise braking.",
+                            IsDeleted = false,
+                            LocationId = 5,
+                            Name = "Heusinkveld Sprint Pedals",
+                            Price = 899.99m,
+                            ReleaseDate = new DateTime(2020, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weight = 7.2000000000000002
+                        });
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.ProductCustomer", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProductId", "CustomerId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("ProductsCustomers");
+                });
+
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
@@ -611,27 +629,22 @@ namespace SimStop.Web.Migrations
                     b.ToTable("Shops");
                 });
 
-            modelBuilder.Entity("SimStop.Data.Models.ShopCustomer", b =>
+            modelBuilder.Entity("SimStop.Data.Models.ShopProduct", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("ShopId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId", "CustomerId");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("CustomerId");
+                    b.HasKey("ShopId", "ProductId");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("ShopsCustomers");
+                    b.ToTable("ShopsProducts");
                 });
 
-            modelBuilder.Entity("SimStop.Data.Models.ShopProduct", b =>
+            modelBuilder.Entity("SimStop.Data.Models.ShopProductDiscount", b =>
                 {
                     b.Property<int>("ShopId")
                         .HasColumnType("int");
@@ -646,7 +659,7 @@ namespace SimStop.Web.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ShopsProducts");
+                    b.ToTable("ShopsProductsDiscounts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -700,7 +713,26 @@ namespace SimStop.Web.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Product", b =>
+            modelBuilder.Entity("SimStop.Data.Models.BundleProduct", b =>
+                {
+                    b.HasOne("SimStop.Data.Models.Bundle", "Bundle")
+                        .WithMany()
+                        .HasForeignKey("BundleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bundle");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.Product", b =>
                 {
                     b.HasOne("SimStop.Data.Models.Brand", "Brand")
                         .WithMany()
@@ -727,21 +759,21 @@ namespace SimStop.Web.Migrations
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("SimStop.Data.Models.BundleProduct", b =>
+            modelBuilder.Entity("SimStop.Data.Models.ProductCustomer", b =>
                 {
-                    b.HasOne("SimStop.Data.Models.Bundle", "Bundle")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Customer")
                         .WithMany()
-                        .HasForeignKey("BundleId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Product", "Product")
-                        .WithMany()
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany("ProductsClients")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Bundle");
+                    b.Navigation("Customer");
 
                     b.Navigation("Product");
                 });
@@ -765,37 +797,10 @@ namespace SimStop.Web.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("SimStop.Data.Models.ShopCustomer", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Product", "Product")
-                        .WithMany("ProductsClients")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SimStop.Data.Models.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Shop");
-                });
-
             modelBuilder.Entity("SimStop.Data.Models.ShopProduct", b =>
                 {
-                    b.HasOne("Product", "Product")
-                        .WithMany("ShopProducts")
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -811,11 +816,28 @@ namespace SimStop.Web.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("Product", b =>
+            modelBuilder.Entity("SimStop.Data.Models.ShopProductDiscount", b =>
+                {
+                    b.HasOne("SimStop.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimStop.Data.Models.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("SimStop.Data.Models.Product", b =>
                 {
                     b.Navigation("ProductsClients");
-
-                    b.Navigation("ShopProducts");
                 });
 
             modelBuilder.Entity("SimStop.Data.Models.Shop", b =>

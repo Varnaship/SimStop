@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data.Models;
+using System;
 
 namespace SimStop.Data
 {
@@ -18,6 +20,37 @@ namespace SimStop.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Shop>()
+                 .Property(s => s.TotalRevenue)
+                 .HasColumnType("decimal(18,2)");
+
+            // Seed Users
+            var hasher = new PasswordHasher<IdentityUser>();
+            var user1 = new IdentityUser
+            {
+                Id = "1",
+                UserName = "Kris@SimStop.com",
+                NormalizedUserName = "KRIS@SIMSTOP.COM",
+                Email = "Kris@SimStop.com",
+                NormalizedEmail = "KRIS@SIMSTOP.COM",
+                EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            user1.PasswordHash = hasher.HashPassword(user1, "Kris1234");
+
+            var user2 = new IdentityUser
+            {
+                Id = "2",
+                UserName = "Kris2@SimStop.com",
+                NormalizedUserName = "KRIS2@SIMSTOP.COM",
+                Email = "Kris2@SimStop.com",
+                NormalizedEmail = "KRIS2@SIMSTOP.COM",
+                EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            user2.PasswordHash = hasher.HashPassword(user2, "Kris1234");
+
+            modelBuilder.Entity<IdentityUser>().HasData(user1, user2);
 
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, CategoryName = "Wheel" },
@@ -123,9 +156,11 @@ namespace SimStop.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Shop> Shops { get; set; }
-        public DbSet<ProductCustomer> ProductsCustomers { get; set; }
+        public DbSet<ShopCustomer> ShopsCustomers { get; set; }
         public DbSet<Bundle> Bundles { get; set; }
         public DbSet<BundleProduct> BundlesProducts { get; set; }
-        public DbSet<ShopProductDiscount> ShopsProductsDiscounts { get; set; }
+        public DbSet<ShopProduct> ShopsProducts { get; set; }
     }
 }
+
+

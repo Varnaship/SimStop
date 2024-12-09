@@ -2,17 +2,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace SimStop.Data.Models
 {
-    [PrimaryKey(nameof(ShopId),nameof(ProductId))]
-    public class ShopProductDiscount
+    [PrimaryKey(nameof(ShopId), nameof(ProductId))]
+    public class ShopProduct
     {
         [Required]
         public int ShopId { get; set; }
 
         [ForeignKey(nameof(ShopId))]
-        public Shop Shop { get; set; }  = null!;
+        public Shop Shop { get; set; } = null!;
 
         [Required]
         public int ProductId { get; set; }
@@ -21,6 +20,8 @@ namespace SimStop.Data.Models
         public Product Product { get; set; } = null!;
 
         [Required]
-        public double Discount { get; set; }
+        public double Discount { get; set; } // Add Discount property
     }
 }
+
+

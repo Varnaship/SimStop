@@ -1,7 +1,7 @@
 ﻿using static SimStop.Common.Constants.DatabaseConstants;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using Microsoft.AspNetCore.Identity;
 
 namespace SimStop.Data.Models
 {
@@ -19,10 +19,16 @@ namespace SimStop.Data.Models
 
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; } = null!;
+
         [Required]
         public decimal TotalRevenue { get; set; }
 
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        [Required]
+        public string OwnerId { get; set; } = null!;
 
+        [ForeignKey(nameof(OwnerId))]
+        public IdentityUser Owner { get; set; } = null!;
+
+        public ICollection<ShopProduct> ShopProducts { get; set; } = new List<ShopProduct>();
     }
 }

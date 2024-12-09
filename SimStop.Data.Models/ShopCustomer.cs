@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SimStop.Data.Models
 {
     [PrimaryKey(nameof(ProductId), nameof(CustomerId))]
-    public class ProductCustomer
+    public class ShopCustomer
     {
         [Required]
         public int ProductId { get; set; }
@@ -19,5 +19,12 @@ namespace SimStop.Data.Models
 
         [ForeignKey(nameof(CustomerId))]
         public IdentityUser Customer { get; set; } = null!;
+
+        [Required]
+        public int ShopId { get; set; }
+
+        [ForeignKey(nameof(ShopId))]
+        public Shop Shop { get; set; } = null!;
     }
 }
+
