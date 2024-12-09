@@ -1,0 +1,110 @@
+﻿@model SimStop.Web.Models.Product.ShopProductsViewModel
+
+@{
+    ViewData["Title"] = "Shop Products";
+}
+
+<h1>Products in @Model.ShopName</h1>
+
+@if (Model.IsOwner)
+{
+    <p>
+        <a asp-action="AddProduct" asp-route-shopId="@Model.ShopId" class="btn btn-success">Add Product</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Release Date</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.Products)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>
+                    @if (product.DiscountedPrice.HasValue && product.DiscountedPrice.Value < product.Price)
+                    {
+                        <del>@product.Price.ToString("C")</del>
+                        <span style="background-color: red; color: white;">@product.DiscountedPrice.Value.ToString("C")</span>
+                    }
+                    else
+                    {
+                        @product.Price.ToString("C")
+                    }
+                </td>
+                <td>@product.Description</td>
+                <td>@product.ReleaseDate</td>
+                <td>@product.BrandName</td>
+                <td>@product.CategoryName</td>
+                <td>
+                    @if (Model.IsOwner)
+                    {
+                        <form asp-action="RemoveProduct" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="shopId" value="@Model.ShopId" />
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                        <a asp-action="ApplyDiscount" asp-route-shopId="@Model.ShopId" asp-route-productId="@product.Id" class="btn btn-warning">Apply/Update Discount</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary add-to-cart-btn" data-id="@product.Id" data-shop-id="@Model.ShopId">Add to Cart</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="cartModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/Cart" class="btn btn-primary">Go to Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.add-to-cart-btn', function () {
+            var productId = $(this).data('id');
+            var shopId = $(this).data('shop-id');
+
+            $.post('/ShopProducts/AddToCart', { productId: productId, shopId: shopId, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() })
+                .done(function (response) {
+                    if (response.success) {
+                        $('#cartModalBody').html('<div class="alert alert-success">Product added to cart successfully.</div>');
+                    } else {
+                        $('#cartModalBody').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                    $('#cartModal').modal('show');
+                })
+                .fail(function () {
+                    $('#cartModalBody').html('<div class="alert alert-danger">Failed to add product to cart.</div>');
+                    $('#cartModal').modal('show');
+                });
+        });
+    </script>
+}
+

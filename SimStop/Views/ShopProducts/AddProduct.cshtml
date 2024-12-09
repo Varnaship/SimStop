@@ -1,0 +1,30 @@
+﻿@model SimStop.Web.Models.Product.AddProductViewModel
+
+@{
+    ViewData["Title"] = "Add Product to Shop";
+}
+
+<h1>Add Product to @Model.ShopName</h1>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @ViewBag.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-action="AddProduct">
+    <input type="hidden" asp-for="ShopId" />
+    <div class="form-group">
+        <label asp-for="ProductId" class="control-label"></label>
+        <select asp-for="ProductId" class="form-control" asp-items="@(new SelectList(Model.Products, "Id", "Name"))"></select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Add Product" class="btn btn-primary" />
+    </div>
+</form>
+
+<p>
+    <a asp-action="Index" asp-route-shopId="@Model.ShopId" class="btn btn-secondary">Back to Shop</a>
+</p>
