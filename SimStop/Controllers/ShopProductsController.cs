@@ -30,15 +30,80 @@ namespace SimStop.Web.Controllers
                 return NotFound();
             }
 
+            var categories = await context.Categories.ToListAsync();
+            ViewBag.Categories = categories;
+
             var userId = GetUserId();
             var isOwner = shop.OwnerId == userId;
+
+            var products = shop.ShopProducts.Select(sp => new ProductViewModel
+            {
+                Id = sp.Product.Id,
+                Name = sp.Product.Name,
+                Price = sp.Product.Price,
+                DiscountedPrice = sp.Discount > 0 ? sp.Product.Price * (1 - (decimal)sp.Discount / 100) : (decimal?)null,
+                Description = sp.Product.Description,
+                ReleaseDate = sp.Product.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
+                BrandName = sp.Product.Brand.Name,
+                CategoryName = sp.Product.Category.CategoryName
+            }).ToList();
 
             var model = new ShopProductsViewModel
             {
                 ShopId = shop.Id,
                 ShopName = shop.ShopName,
                 IsOwner = isOwner,
-                Products = shop.ShopProducts.Select(sp => new ProductViewModel
+                Products = products
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Filter(int shopId, string name, int? categoryId, int? yearFrom, int? yearTo, decimal? minPrice, decimal? maxPrice, bool? hasDiscount)
+        {
+            var query = context.ShopsProducts
+                .Include(sp => sp.Product)
+                .Where(sp => sp.ShopId == shopId)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(sp => sp.Product.Name.Contains(name));
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(sp => sp.Product.CategoryId == categoryId);
+            }
+
+            if (yearFrom.HasValue)
+            {
+                query = query.Where(sp => sp.Product.ReleaseDate.Year >= yearFrom);
+            }
+
+            if (yearTo.HasValue)
+            {
+                query = query.Where(sp => sp.Product.ReleaseDate.Year <= yearTo);
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(sp => sp.Product.Price >= minPrice);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(sp => sp.Product.Price <= maxPrice);
+            }
+
+            if (hasDiscount.HasValue && hasDiscount.Value)
+            {
+                query = query.Where(sp => sp.Discount > 0);
+            }
+
+            var products = await query
+                .Select(sp => new ProductViewModel
                 {
                     Id = sp.Product.Id,
                     Name = sp.Product.Name,
@@ -48,10 +113,31 @@ namespace SimStop.Web.Controllers
                     ReleaseDate = sp.Product.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
                     BrandName = sp.Product.Brand.Name,
                     CategoryName = sp.Product.Category.CategoryName
-                }).ToList()
+                })
+                .ToListAsync();
+
+            var shop = await context.Shops
+                .Where(s => s.Id == shopId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var userId = GetUserId();
+            var isOwner = shop.OwnerId == userId;
+
+            var model = new ShopProductsViewModel
+            {
+                ShopId = shop.Id,
+                ShopName = shop.ShopName,
+                IsOwner = isOwner,
+                Products = products
             };
 
-            return View(model);
+            return PartialView("_ProductList", model);
         }
 
         [HttpPost]
@@ -125,8 +211,6 @@ namespace SimStop.Web.Controllers
                 return Json(new { success = false, message = $"An error occurred while adding the product to the cart: {ex.Message}" });
             }
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> AddProduct(int shopId)
@@ -316,3 +400,4 @@ namespace SimStop.Web.Controllers
         }
     }
 }
+

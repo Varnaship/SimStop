@@ -13,6 +13,46 @@
     </p>
 }
 
+<div class="row mb-3">
+    <div class="col-md-3">
+        <input type="text" id="nameFilter" class="form-control" placeholder="Search by name" />
+    </div>
+    <div class="col-md-3">
+        <select id="categoryFilter" class="form-control">
+            <option value="">All Categories</option>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.Id">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex">
+            <input type="number" id="yearFromFilter" class="form-control" placeholder="Year From" />
+            <input type="number" id="yearToFilter" class="form-control" placeholder="Year To" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex">
+            <input type="text" id="minPriceFilter" class="form-control" placeholder="Min Price = 0" readonly />
+            <input type="text" id="maxPriceFilter" class="form-control" placeholder="Max Price = 4000" readonly />
+        </div>
+        <div id="priceSlider" class="mt-2"></div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="discountFilter">
+            <label class="form-check-label" for="discountFilter">Has Discount</label>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <button id="filterButton" class="btn btn-primary">Filter</button>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -25,7 +65,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="productList">
         @foreach (var product in Model.Products)
         {
             <tr>
@@ -86,6 +126,8 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).on('click', '.add-to-cart-btn', function () {
             var productId = $(this).data('id');
@@ -105,6 +147,61 @@
                     $('#cartModal').modal('show');
                 });
         });
+
+        $(document).ready(function () {
+            $("#nameFilter").on("input", function () {
+                filterProducts();
+            });
+
+            $("#filterButton").click(function () {
+                filterProducts();
+            });
+
+            $("#priceSlider").slider({
+                range: true,
+                min: 0,
+                max: 4000,
+                values: [0, 4000],
+                slide: function (event, ui) {
+                    $("#minPriceFilter").val("Min Price = " + ui.values[0]);
+                    $("#maxPriceFilter").val("Max Price = " + ui.values[1]);
+                },
+                change: function (event, ui) {
+                    filterProducts();
+                }
+            });
+
+            function filterProducts() {
+                var name = $("#nameFilter").val();
+                var categoryId = $("#categoryFilter").val();
+                var yearFrom = $("#yearFromFilter").val();
+                var yearTo = $("#yearToFilter").val();
+                var minPrice = $("#priceSlider").slider("values", 0);
+                var maxPrice = $("#priceSlider").slider("values", 1);
+                var hasDiscount = $("#discountFilter").is(":checked");
+
+                $.ajax({
+                    url: '@Url.Action("Filter", "ShopProducts")',
+                    data: {
+                        shopId: @Model.ShopId,
+                        name: name,
+                        categoryId: categoryId,
+                        yearFrom: yearFrom,
+                        yearTo: yearTo,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        hasDiscount: hasDiscount
+                    },
+                    success: function (data) {
+                        $("#productList").html(data);
+                    }
+                });
+            }
+
+            $("#minPriceFilter").val("Min Price = " + $("#priceSlider").slider("values", 0));
+            $("#maxPriceFilter").val("Max Price = " + $("#priceSlider").slider("values", 1));
+        });
     </script>
 }
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

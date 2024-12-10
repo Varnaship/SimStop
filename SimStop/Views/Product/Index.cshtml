@@ -1,33 +1,104 @@
 ﻿@model List<SimStop.Web.Models.Product.ProductViewModel>
 
+@{
+    ViewData["Title"] = "Products";
+}
+
 <h1>Products</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Release Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.Price.ToString("C")</td>
-                <td>@product.Description</td>
-                <td>@product.ReleaseDate</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-info">Details</a>
-                    <a asp-action="ViewShops" asp-route-id="@product.Id" class="btn btn-primary">View Shops</a>
-                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row mb-3">
+    <div class="col-md-3">
+        <input type="text" id="nameFilter" class="form-control" placeholder="Search by name" />
+    </div>
+    <div class="col-md-3">
+        <select id="categoryFilter" class="form-control">
+            <option value="">All Categories</option>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.Id">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex">
+            <input type="number" id="yearFromFilter" class="form-control" placeholder="Year From" />
+            <input type="number" id="yearToFilter" class="form-control" placeholder="Year To" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex">
+            <input type="text" id="minPriceFilter" class="form-control" placeholder="Min Price = 0" readonly />
+            <input type="text" id="maxPriceFilter" class="form-control" placeholder="Max Price = 4000" readonly />
+        </div>
+        <div id="priceSlider" class="mt-2"></div>
+    </div>
+</div>
 
+<div class="row mb-3">
+    <div class="col-md-12">
+        <button id="filterButton" class="btn btn-primary">Filter</button>
+    </div>
+</div>
+
+<div id="productList">
+    @await Html.PartialAsync("_ProductList", Model)
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#nameFilter").on("input", function () {
+                filterProducts();
+            });
+
+            $("#filterButton").click(function () {
+                filterProducts();
+            });
+
+            $("#priceSlider").slider({
+                range: true,
+                min: 0,
+                max: 4000,
+                values: [0, 4000],
+                slide: function (event, ui) {
+                    $("#minPriceFilter").val("Min Price = " + ui.values[0]);
+                    $("#maxPriceFilter").val("Max Price = " + ui.values[1]);
+                },
+                change: function (event, ui) {
+                    filterProducts();
+                }
+            });
+
+            function filterProducts() {
+                var name = $("#nameFilter").val();
+                var categoryId = $("#categoryFilter").val();
+                var yearFrom = $("#yearFromFilter").val();
+                var yearTo = $("#yearToFilter").val();
+                var minPrice = $("#priceSlider").slider("values", 0);
+                var maxPrice = $("#priceSlider").slider("values", 1);
+
+                $.ajax({
+                    url: '@Url.Action("Filter", "Product")',
+                    data: {
+                        name: name,
+                        categoryId: categoryId,
+                        yearFrom: yearFrom,
+                        yearTo: yearTo,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice
+                    },
+                    success: function (data) {
+                        $("#productList").html(data);
+                    }
+                });
+            }
+
+            $("#minPriceFilter").val("Min Price = " + $("#priceSlider").slider("values", 0));
+            $("#maxPriceFilter").val("Max Price = " + $("#priceSlider").slider("values", 1));
+        });
+    </script>
+}
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

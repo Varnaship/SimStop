@@ -5,6 +5,7 @@ using SimStop.Web.Models.Product;
 using SimStop.Web.Models.Shop;
 using System.Linq;
 using System.Threading.Tasks;
+using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Controllers
 {
@@ -20,6 +21,9 @@ namespace SimStop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            var categories = await _context.Categories.ToListAsync();
+            ViewBag.Categories = categories;
+
             var products = await _context.Products
                 .Where(p => !p.IsDeleted)
                 .Select(p => new ProductViewModel
@@ -28,11 +32,61 @@ namespace SimStop.Web.Controllers
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy") // Format the date as string
+                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat) // Format the date as string
                 })
                 .ToListAsync();
 
             return View(products);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Filter(string name, int? categoryId, int? yearFrom, int? yearTo, decimal? minPrice, decimal? maxPrice)
+        {
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(p => p.Name.Contains(name));
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId);
+            }
+
+            if (yearFrom.HasValue)
+            {
+                query = query.Where(p => p.ReleaseDate.Year >= yearFrom);
+            }
+
+            if (yearTo.HasValue)
+            {
+                query = query.Where(p => p.ReleaseDate.Year <= yearTo);
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice);
+            }
+
+            var products = await query
+                .Where(p => !p.IsDeleted)
+                .Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Description = p.Description,
+                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat) // Format the date as string
+                })
+                .ToListAsync();
+
+            return PartialView("_ProductList", products);
         }
 
         [HttpGet]
@@ -46,7 +100,7 @@ namespace SimStop.Web.Controllers
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy"), // Format the date as string
+                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat), // Format the date as string
                     Weight = p.Weight,
                     BrandName = p.Brand.Name,
                     CategoryName = p.Category.CategoryName,
@@ -177,5 +231,3 @@ namespace SimStop.Web.Controllers
         }
     }
 }
-
-

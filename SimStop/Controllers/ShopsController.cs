@@ -16,6 +16,9 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = GetUserId();
+            var locations = await context.Locations.ToListAsync();
+            ViewBag.Locations = locations;
+
             var model = await context.Shops
                 .Include(s => s.Location)
                 .Select(s => new ShopViewModel
@@ -29,6 +32,33 @@ namespace SimStop.Web.Controllers
                 .ToListAsync();
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Filter(int? locationId)
+        {
+            var userId = GetUserId();
+            var query = context.Shops
+                .Include(s => s.Location)
+                .AsQueryable();
+
+            if (locationId.HasValue)
+            {
+                query = query.Where(s => s.LocationId == locationId);
+            }
+
+            var model = await query
+                .Select(s => new ShopViewModel
+                {
+                    Id = s.Id,
+                    ShopName = s.ShopName,
+                    LocationName = s.Location.LocationName,
+                    IsOwner = s.OwnerId == userId
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            return PartialView("_ShopList", model);
         }
 
         [HttpGet]
