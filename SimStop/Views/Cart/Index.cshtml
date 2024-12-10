@@ -46,9 +46,51 @@ else
             <a asp-action="Index" asp-controller="Product" class="btn btn-secondary">Continue Shopping</a>
         </div>
         <div class="col-md-6 text-right">
-            <form asp-action="Checkout" method="post">
-                <button type="submit" class="btn btn-success">Checkout</button>
-            </form>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
         </div>
     </div>
+}
+
+<!-- Checkout Confirmation Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkoutModalLabel">Confirm Checkout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to finalize the purchase?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmCheckout">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informational Block -->
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info" role="alert">
+        @TempData["InfoMessage"]
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle checkout confirmation
+            $('#confirmCheckout').click(function () {
+                $.post('@Url.Action("Checkout", "Cart")', function (data) {
+                    if (data.success) {
+                        window.location.href = '@Url.Action("Confirmation", "Cart")';
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+    </script>
 }

@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
 using SimStop.Data.Models;
 using SimStop.Web.ViewModels;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimStop.Web.Controllers
 {
@@ -48,6 +51,7 @@ namespace SimStop.Web.Controllers
             {
                 _context.ShopsCustomers.Remove(productCustomer);
                 await _context.SaveChangesAsync();
+                TempData["InfoMessage"] = "Item removed from the cart.";
             }
 
             return RedirectToAction(nameof(Index));
@@ -68,7 +72,7 @@ namespace SimStop.Web.Controllers
             if (!cartItems.Any())
             {
                 TempData["ErrorMessage"] = "Your cart is empty!";
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = "Your cart is empty!" });
             }
 
             decimal totalValue = 0;
@@ -99,7 +103,7 @@ namespace SimStop.Web.Controllers
             // Pass totalValue to the confirmation view
             TempData["TotalValue"] = totalValue.ToString("C");
 
-            return RedirectToAction("Confirmation");
+            return Json(new { success = true });
         }
 
         [HttpGet]
