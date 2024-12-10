@@ -1,68 +1,57 @@
-﻿using DeskMarket.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
-using SimStop.Data.Models;
 using SimStop.Web.Models.Product;
-using System.Globalization;
-using static SimStop.Common.Constants.DatabaseConstants;
+using SimStop.Web.Models.Shop;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimStop.Web.Controllers
 {
-    public class ProductController(ApplicationDbContext context) : BaseController
+    public class ProductController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public ProductController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var model = await context.Products
-               .Where(p => !p.IsDeleted)
-               .Select(p => new ProductViewModel
-               {
-                   Id = p.Id,
-                   Name = p.Name,
-                   Price = p.Price,
-                   Description = p.Description,
-                   ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
-               })
-               .AsNoTracking()
-               .ToListAsync();
+            var products = await _context.Products
+                .Where(p => !p.IsDeleted)
+                .Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Description = p.Description,
+                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy") // Format the date as string
+                })
+                .ToListAsync();
 
-            return View(model);
+            return View(products);
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var model = await context.Products
-                .Where(p => !p.IsDeleted && p.Id == id)
+            var product = await _context.Products
+                .Where(p => p.Id == id && !p.IsDeleted)
                 .Select(p => new ProductDetailsViewModel
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
+                    ReleaseDate = p.ReleaseDate.ToString("d MMM yyyy"), // Format the date as string
                     Weight = p.Weight,
                     BrandName = p.Brand.Name,
                     CategoryName = p.Category.CategoryName,
-                    LocationName = p.Location.LocationName,
+                    LocationName = p.Location.LocationName
                 })
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var product = await context.Products
-                .Where(p => p.Id == id && !p.IsDeleted)
                 .FirstOrDefaultAsync();
 
             if (product == null)
@@ -70,37 +59,72 @@ namespace SimStop.Web.Controllers
                 return NotFound();
             }
 
-            var model = new ProductEditViewModel
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Description = product.Description,
-                AddedOn = product.ReleaseDate.ToString(ProductReleaseDateFormat, CultureInfo.InvariantCulture),
-                CategoryId = product.CategoryId,
-                Categories = await GetCategories()
-            };
+            return View(product);
+        }
 
-            return View(model);
+        [HttpGet]
+        public async Task<IActionResult> ViewShops(int id)
+        {
+            var product = await _context.Products
+                .Where(p => p.Id == id && !p.IsDeleted)
+                .Select(p => new ProductShopsViewModel
+                {
+                    ProductId = p.Id,
+                    ProductName = p.Name,
+                    Shops = p.ShopProducts.Select(sp => new ShopViewModel
+                    {
+                        Id = sp.ShopId,
+                        ShopName = sp.Shop.ShopName,
+                        LocationName = sp.Shop.Location.LocationName,
+                        Price = sp.Discount > 0 ? sp.Product.Price * (1 - (decimal)sp.Discount / 100) : sp.Product.Price,
+                        IsOwner = false // Adjust as needed
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var product = await _context.Products
+                .Where(p => p.Id == id && !p.IsDeleted)
+                .Select(p => new ProductEditViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Description = p.Description,
+                    ReleaseDate = p.ReleaseDate, // Use DateTime directly
+                    CategoryId = p.CategoryId,
+                    Categories = _context.Categories.ToList() // Populate categories
+                })
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(ProductEditViewModel model)
         {
-            model.Categories = await GetCategories();
-
             if (!ModelState.IsValid)
             {
+                model.Categories = _context.Categories.ToList(); // Repopulate categories
                 return View(model);
             }
 
-            if (!DateTime.TryParseExact(model.AddedOn, ProductReleaseDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
-            {
-                ModelState.AddModelError(nameof(model.AddedOn), "Invalid date or time format");
-                return View(model);
-            }
-
-            var product = await context.Products.FindAsync(model.Id);
+            var product = await _context.Products.FindAsync(model.Id);
             if (product == null)
             {
                 return NotFound();
@@ -109,59 +133,49 @@ namespace SimStop.Web.Controllers
             product.Name = model.Name;
             product.Price = model.Price;
             product.Description = model.Description;
-            product.ReleaseDate = parsedDateTime;
+            product.ReleaseDate = model.ReleaseDate;
             product.CategoryId = model.CategoryId;
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Details), new { id = model.Id });
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddToCart(int id)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var userId = GetUserId();
-
-                // Check if the product exists
-                var productExists = await context.Products
-                    .AnyAsync(p => p.Id == id && !p.IsDeleted);
-
-                if (!productExists)
+            var product = await _context.Products
+                .Where(p => p.Id == id && !p.IsDeleted)
+                .Select(p => new ProductDeleteViewModel
                 {
-                    return NotFound("Product does not exist.");
-                }
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .FirstOrDefaultAsync();
 
-                // Check if the product is already in the cart
-                var existingCartItem = await context.ShopsCustomers
-                    .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == id);
-
-                if (existingCartItem == null)
-                {
-                    // Add the product to the cart
-                    var newProductClient = new ShopCustomer
-                    {
-                        ProductId = id,
-                        CustomerId = userId
-                    };
-
-                    await context.ShopsCustomers.AddAsync(newProductClient);
-                    await context.SaveChangesAsync();
-                }
-
-                return Json(new { success = true, message = "Product added to cart." });
-            }
-            catch (Exception ex)
+            if (product == null)
             {
-                Console.WriteLine($"Error adding product to cart: {ex.Message}");
-                return StatusCode(500, "An error occurred while adding the product to the cart.");
+                return NotFound();
             }
+
+            return View(product);
         }
 
-        private async Task<List<Category>> GetCategories()
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return await context.Categories.ToListAsync();
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.IsDeleted = true;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
+
+

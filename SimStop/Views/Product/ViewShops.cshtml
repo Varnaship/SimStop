@@ -1,0 +1,31 @@
+﻿@model SimStop.Web.Models.Product.ProductShopsViewModel
+
+<h1>Shops for @Model.ProductName</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Shop Name</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var shop in Model.Shops)
+        {
+            <tr>
+                <td>@shop.ShopName</td>
+                <td>@shop.LocationName</td>
+                <td>@shop.Price.ToString("C")</td>
+                <td>
+                    <a asp-action="Index" asp-controller="ShopProducts" asp-route-shopId="@shop.Id" class="btn btn-info">View Shop</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Products</a>
+
+

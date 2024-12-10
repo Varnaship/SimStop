@@ -21,47 +21,13 @@
                 <td>@product.Description</td>
                 <td>@product.ReleaseDate</td>
                 <td>
-                    <button class="btn btn-primary add-to-cart-btn" data-id="@product.Id">Add to Cart</button>
                     <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-info">Details</a>
+                    <a asp-action="ViewShops" asp-route-id="@product.Id" class="btn btn-primary">View Shops</a>
+                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- Modal -->
-<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cartModalLabel">Cart</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="cartMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="/Cart" class="btn btn-primary">Go to Cart</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        $(document).on('click', '.add-to-cart-btn', function () {
-            var productId = $(this).data('id');
-
-            $.post('/Product/AddToCart', { id: productId })
-                .done(function (response) {
-                    $('#cartMessage').text(response.message);
-                    $('#cartModal').modal('show');
-                })
-                .fail(function () {
-                    $('#cartMessage').text('Failed to add product to cart.');
-                    $('#cartModal').modal('show');
-                });
-        });
-    </script>
-}

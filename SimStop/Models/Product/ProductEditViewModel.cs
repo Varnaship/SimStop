@@ -22,7 +22,7 @@ namespace SimStop.Web.Models.Product
 
         [Required]
         [Display(Name = "Release Date")]
-        public string AddedOn { get; set; } = null!; // Must match the format "d MMM yyyy"
+        public DateTime ReleaseDate { get; set; } // Changed to DateTime
 
         [Required]
         [Display(Name = "Category")]
@@ -31,3 +31,4 @@ namespace SimStop.Web.Models.Product
         public IEnumerable<Category>? Categories { get; set; } // Populate from GetCategories()
     }
 }
+
