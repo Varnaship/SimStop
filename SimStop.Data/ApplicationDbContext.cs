@@ -157,8 +157,6 @@ namespace SimStop.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ShopCustomer> ShopsCustomers { get; set; }
-        public DbSet<Bundle> Bundles { get; set; }
-        public DbSet<BundleProduct> BundlesProducts { get; set; }
         public DbSet<ShopProduct> ShopsProducts { get; set; }
     }
 }
