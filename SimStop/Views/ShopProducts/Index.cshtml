@@ -6,7 +6,7 @@
 
 <h1>Products in @Model.ShopName</h1>
 
-@if (Model.IsOwner)
+@if (Model.IsOwner || User.IsInRole("Admin"))
 {
     <p>
         <a asp-action="AddProduct" asp-route-shopId="@Model.ShopId" class="btn btn-success">Add Product</a>
@@ -86,7 +86,7 @@
                 <td>@product.BrandName</td>
                 <td>@product.CategoryName</td>
                 <td>
-                    @if (Model.IsOwner)
+                    @if (Model.IsOwner || User.IsInRole("Admin"))
                     {
                         <form asp-action="RemoveProduct" method="post" style="display:inline;">
                             @Html.AntiForgeryToken()
@@ -205,3 +205,4 @@
 }
 
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+

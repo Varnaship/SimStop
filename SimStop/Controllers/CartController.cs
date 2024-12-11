@@ -1,4 +1,5 @@
 ﻿using DeskMarket.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace SimStop.Web.Controllers
 {
+    [Authorize]
     public class CartController(ApplicationDbContext _context) : BaseController
     {
         [HttpGet]

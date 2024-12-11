@@ -1,6 +1,6 @@
-﻿@model SimStop.Web.Models.Product.ShopProductsViewModel
+﻿@model IEnumerable<SimStop.Web.Models.Product.ProductViewModel>
 
-@foreach (var product in Model.Products)
+@foreach (var product in Model)
 {
     <tr>
         <td>@product.Name</td>
@@ -20,20 +20,21 @@
         <td>@product.BrandName</td>
         <td>@product.CategoryName</td>
         <td>
-            @if (Model.IsOwner)
+            @if (ViewBag.IsOwner || User.IsInRole("Admin"))
             {
                 <form asp-action="RemoveProduct" method="post" style="display:inline;">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="shopId" value="@Model.ShopId" />
+                    <input type="hidden" name="shopId" value="@ViewBag.ShopId" />
                     <input type="hidden" name="productId" value="@product.Id" />
                     <button type="submit" class="btn btn-danger">Remove</button>
                 </form>
-                <a asp-action="ApplyDiscount" asp-route-shopId="@Model.ShopId" asp-route-productId="@product.Id" class="btn btn-warning">Apply/Update Discount</a>
+                <a asp-action="ApplyDiscount" asp-route-shopId="@ViewBag.ShopId" asp-route-productId="@product.Id" class="btn btn-warning">Apply/Update Discount</a>
             }
             else
             {
-                <button class="btn btn-primary add-to-cart-btn" data-id="@product.Id" data-shop-id="@Model.ShopId">Add to Cart</button>
+                <button class="btn btn-primary add-to-cart-btn" data-id="@product.Id" data-shop-id="@ViewBag.ShopId">Add to Cart</button>
             }
         </td>
     </tr>
 }
+

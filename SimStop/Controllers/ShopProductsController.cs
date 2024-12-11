@@ -1,4 +1,5 @@
 ﻿using DeskMarket.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
@@ -9,6 +10,7 @@ using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Controllers
 {
+    [Authorize]
     public class ShopProductsController(ApplicationDbContext context) : BaseController
     {
         [HttpGet]
@@ -129,15 +131,10 @@ namespace SimStop.Web.Controllers
             var userId = GetUserId();
             var isOwner = shop.OwnerId == userId;
 
-            var model = new ShopProductsViewModel
-            {
-                ShopId = shop.Id,
-                ShopName = shop.ShopName,
-                IsOwner = isOwner,
-                Products = products
-            };
+            ViewBag.IsOwner = isOwner;
+            ViewBag.ShopId = shopId;
 
-            return PartialView("_ProductList", model);
+            return PartialView("_ProductList", products);
         }
 
         [HttpPost]
@@ -213,12 +210,13 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> AddProduct(int shopId)
         {
             var userId = GetUserId();
             var shop = await context.Shops.FindAsync(shopId);
 
-            if (shop == null || shop.OwnerId != userId)
+            if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -245,6 +243,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(AddProductViewModel model)
         {
@@ -253,7 +252,7 @@ namespace SimStop.Web.Controllers
                 .Include(s => s.ShopProducts)
                 .FirstOrDefaultAsync(s => s.Id == model.ShopId);
 
-            if (shop == null || shop.OwnerId != userId)
+            if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -299,6 +298,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveProduct(int shopId, int productId)
         {
@@ -307,7 +307,7 @@ namespace SimStop.Web.Controllers
                 .Include(s => s.ShopProducts)
                 .FirstOrDefaultAsync(s => s.Id == shopId);
 
-            if (shop == null || shop.OwnerId != userId)
+            if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -326,12 +326,13 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> ApplyDiscount(int shopId, int productId)
         {
             var userId = GetUserId();
             var shop = await context.Shops.FindAsync(shopId);
 
-            if (shop == null || shop.OwnerId != userId)
+            if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -358,13 +359,14 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApplyDiscount(ApplyDiscountViewModel model)
         {
             var userId = GetUserId();
             var shop = await context.Shops.FindAsync(model.ShopId);
 
-            if (shop == null || shop.OwnerId != userId)
+            if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }

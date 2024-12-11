@@ -1,4 +1,5 @@
 ﻿using DeskMarket.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
@@ -10,6 +11,7 @@ using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Controllers
 {
+    [Authorize]
     public class ShopsController(ApplicationDbContext context) : BaseController
     {
         [HttpGet]
@@ -91,6 +93,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Create()
         {
             var model = new ShopCreateViewModel
@@ -102,6 +105,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Create(ShopCreateViewModel model)
         {
             if (!ModelState.IsValid)
@@ -136,11 +140,12 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var shop = await context.Shops.FindAsync(id);
 
-            if (shop == null || shop.OwnerId != GetUserId())
+            if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -157,6 +162,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Edit(ShopEditViewModel model)
         {
             if (!ModelState.IsValid)
@@ -167,7 +173,7 @@ namespace SimStop.Web.Controllers
 
             var shop = await context.Shops.FindAsync(model.Id);
 
-            if (shop == null || shop.OwnerId != GetUserId())
+            if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -181,11 +187,12 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var shop = await context.Shops.FindAsync(id);
 
-            if (shop == null || shop.OwnerId != GetUserId())
+            if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -200,13 +207,14 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var shop = await context.Shops
                 .Include(s => s.ShopProducts)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
-            if (shop == null || shop.OwnerId != GetUserId())
+            if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
@@ -223,3 +231,4 @@ namespace SimStop.Web.Controllers
         }
     }
 }
+
