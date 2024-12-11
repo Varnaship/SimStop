@@ -10,32 +10,24 @@
 
     <div class="row mt-5">
         <div class="col-md-3">
-            <div id="carouselLeft" class="carousel slide" data-ride="carousel">
+            <div id="carouselLeft" class="carousel slide" data-ride="carousel" data-interval="2000">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="~/images/carousel1.jpg" class="d-block w-100" alt="...">
+                        <img src="https://shop.gperformance.eu/wp-content/uploads/2024/10/Simucube-ActivePedal-Pro-force-feedback-pedals-incl.-Baseplate-500x500.webp" class="d-block w-100" alt="Image 1">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel2.jpg" class="d-block w-100" alt="...">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU6cQgTZz819TNJqUAmLJaxO7DXaxSHBOggg&s" class="d-block w-100" alt="Image 2">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel3.jpg" class="d-block w-100" alt="...">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRym5FQfEu0BDfGRSWEthMiVmMwMr4owftHrg&s" class="d-block w-100" alt="Image 3">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel4.jpg" class="d-block w-100" alt="...">
+                        <img src="https://digital-motorsports.com/cdn/shop/collections/Fanatec-Digital-Motorsports.com-1653667582.jpg?v=1653667583" class="d-block w-100" alt="Image 4">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+                        <img src="https://cdncloudcart.com/33446/products/images/12156/racna-spiracka-moza-hbp-handbrake-image_6616aed157d8e_800x800.png?1712764407" class="d-block w-100" alt="Image 5">
                     </div>
                 </div>
-                <a class="carousel-control-prev" href="#carouselLeft" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselLeft" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
             </div>
         </div>
         <div class="col-md-6 text-center">
@@ -44,33 +36,35 @@
             <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Shop Now</a>
         </div>
         <div class="col-md-3">
-            <div id="carouselRight" class="carousel slide" data-ride="carousel">
+            <div id="carouselRight" class="carousel slide" data-ride="carousel" data-interval="2000">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="~/images/carousel1.jpg" class="d-block w-100" alt="...">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsO56Fa5kZic88sJioZ_xfmafwegvVjbvZfA&s" class="d-block w-100" alt="Image 1">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel2.jpg" class="d-block w-100" alt="...">
+                        <img src="https://resource.logitech.com/content/dam/gaming/en/products/driving-force-shifter/shifter-gallery-1.png" class="d-block w-100" alt="Image 2">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel3.jpg" class="d-block w-100" alt="...">
+                        <img src="https://speednation.co.nz/cdn/shop/products/T300_RS_GT_4160681-4168057-4160688_pedalSet.jpg?v=1490922708&width=1214" class="d-block w-100" alt="Image 3">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel4.jpg" class="d-block w-100" alt="...">
+                        <img src="https://eshop.thrustmaster.com/media/catalog/product/cache/f32e6b920edcd12f3fe95d79cda907cf/o/n/onlinecontent_whitebackground-t818ferrarisf1000-1000x1000-a_no_pc_logo.png" class="d-block w-100" alt="Image 4">
                     </div>
                     <div class="carousel-item">
-                        <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+                        <img src="https://cammusracing.com/wp-content/uploads/2022/12/102601.jpg" class="d-block w-100" alt="Image 5">
                     </div>
                 </div>
-                <a class="carousel-control-prev" href="#carouselRight" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselRight" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $('.carousel').carousel({
+                interval: 2000
+            });
+        });
+    </script>
+}
