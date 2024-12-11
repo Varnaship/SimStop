@@ -1,4 +1,4 @@
-﻿@model List<SimStop.Web.Models.Product.ProductViewModel>
+﻿@model SimStop.Web.Models.Product.ProductIndexViewModel
 
 @{
     ViewData["Title"] = "Products";
@@ -8,10 +8,10 @@
 
 <div class="row mb-3">
     <div class="col-md-3">
-        <input type="text" id="nameFilter" class="form-control" placeholder="Search by name" />
+        <input type="text" id="nameFilter" name="name" class="form-control" placeholder="Search by name" value="@Model.Name" />
     </div>
     <div class="col-md-3">
-        <select id="categoryFilter" class="form-control">
+        <select id="categoryFilter" name="categoryId" class="form-control">
             <option value="">All Categories</option>
             @foreach (var category in ViewBag.Categories)
             {
@@ -21,84 +21,51 @@
     </div>
     <div class="col-md-3">
         <div class="d-flex">
-            <input type="number" id="yearFromFilter" class="form-control" placeholder="Year From" />
-            <input type="number" id="yearToFilter" class="form-control" placeholder="Year To" />
+            <input type="number" id="yearFromFilter" name="yearFrom" class="form-control" placeholder="Year From" value="@Model.YearFrom" />
+            <input type="number" id="yearToFilter" name="yearTo" class="form-control" placeholder="Year To" value="@Model.YearTo" />
         </div>
     </div>
     <div class="col-md-3">
         <div class="d-flex">
-            <input type="text" id="minPriceFilter" class="form-control" placeholder="Min Price = 0" readonly />
-            <input type="text" id="maxPriceFilter" class="form-control" placeholder="Max Price = 4000" readonly />
+            <input type="number" id="minPriceFilter" name="minPrice" class="form-control" placeholder="Min Price" value="@Model.MinPrice" />
+            <input type="number" id="maxPriceFilter" name="maxPrice" class="form-control" placeholder="Max Price" value="@Model.MaxPrice" />
         </div>
-        <div id="priceSlider" class="mt-2"></div>
     </div>
 </div>
 
 <div class="row mb-3">
     <div class="col-md-12">
-        <button id="filterButton" class="btn btn-primary">Filter</button>
+        <button id="filterButton" class="btn btn-primary" onclick="applyFilters()">Filter</button>
     </div>
 </div>
 
 <div id="productList">
-    @await Html.PartialAsync("_ProductList", Model)
+    @await Html.PartialAsync("_ProductList", Model.Products)
 </div>
 
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, name = Model.Name, categoryId = Model.CategoryId, yearFrom = Model.YearFrom, yearTo = Model.YearTo, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $("#nameFilter").on("input", function () {
-                filterProducts();
-            });
+        function applyFilters() {
+            var name = $("#nameFilter").val();
+            var categoryId = $("#categoryFilter").val();
+            var yearFrom = $("#yearFromFilter").val();
+            var yearTo = $("#yearToFilter").val();
+            var minPrice = $("#minPriceFilter").val();
+            var maxPrice = $("#maxPriceFilter").val();
 
-            $("#filterButton").click(function () {
-                filterProducts();
-            });
-
-            $("#priceSlider").slider({
-                range: true,
-                min: 0,
-                max: 4000,
-                values: [0, 4000],
-                slide: function (event, ui) {
-                    $("#minPriceFilter").val("Min Price = " + ui.values[0]);
-                    $("#maxPriceFilter").val("Max Price = " + ui.values[1]);
-                },
-                change: function (event, ui) {
-                    filterProducts();
-                }
-            });
-
-            function filterProducts() {
-                var name = $("#nameFilter").val();
-                var categoryId = $("#categoryFilter").val();
-                var yearFrom = $("#yearFromFilter").val();
-                var yearTo = $("#yearToFilter").val();
-                var minPrice = $("#priceSlider").slider("values", 0);
-                var maxPrice = $("#priceSlider").slider("values", 1);
-
-                $.ajax({
-                    url: '@Url.Action("Filter", "Product")',
-                    data: {
-                        name: name,
-                        categoryId: categoryId,
-                        yearFrom: yearFrom,
-                        yearTo: yearTo,
-                        minPrice: minPrice,
-                        maxPrice: maxPrice
-                    },
-                    success: function (data) {
-                        $("#productList").html(data);
-                    }
-                });
-            }
-
-            $("#minPriceFilter").val("Min Price = " + $("#priceSlider").slider("values", 0));
-            $("#maxPriceFilter").val("Max Price = " + $("#priceSlider").slider("values", 1));
-        });
+            var url = '@Url.Action("Index", "Product")' + '?name=' + name + '&categoryId=' + categoryId + '&yearFrom=' + yearFrom + '&yearTo=' + yearTo + '&minPrice=' + minPrice + '&maxPrice=' + maxPrice;
+            window.location.href = url;
+        }
     </script>
 }
-
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
 using SimStop.Web.Models.Product;
 using SimStop.Web.Models.Shop;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using static SimStop.Common.Constants.DatabaseConstants;
@@ -12,6 +13,7 @@ namespace SimStop.Web.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private const int PageSize = 10;
 
         public ProductController(ApplicationDbContext context)
         {
@@ -19,29 +21,11 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, string? name = null, int? categoryId = null, int? yearFrom = null, int? yearTo = null, decimal? minPrice = null, decimal? maxPrice = null)
         {
             var categories = await _context.Categories.ToListAsync();
             ViewBag.Categories = categories;
 
-            var products = await _context.Products
-                .Where(p => !p.IsDeleted)
-                .Select(p => new ProductViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat) // Format the date as string
-                })
-                .ToListAsync();
-
-            return View(products);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Filter(string name, int? categoryId, int? yearFrom, int? yearTo, decimal? minPrice, decimal? maxPrice)
-        {
             var query = _context.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
@@ -74,19 +58,41 @@ namespace SimStop.Web.Controllers
                 query = query.Where(p => p.Price <= maxPrice);
             }
 
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
+
             var products = await query
                 .Where(p => !p.IsDeleted)
+            .OrderBy(p => p.Name)
+                .Skip((pageNumber - 1) * PageSize)
+                .Take(PageSize)
                 .Select(p => new ProductViewModel
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat) // Format the date as string
+                    ReleaseDate = p.ReleaseDate.ToString("yyyy-MM-dd"),
+                    BrandName = p.Brand.Name,
+                    CategoryName = p.Category.CategoryName
                 })
                 .ToListAsync();
 
-            return PartialView("_ProductList", products);
+            var viewModel = new ProductIndexViewModel
+            {
+                Products = products,
+                PageNumber = pageNumber,
+                TotalPages = totalPages,
+                PageSize = PageSize,
+                Name = name,
+                CategoryId = categoryId,
+                YearFrom = yearFrom,
+                YearTo = yearTo,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet]
