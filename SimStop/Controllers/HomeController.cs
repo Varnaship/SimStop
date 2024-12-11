@@ -19,7 +19,7 @@ namespace SimStop.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult StatusCode(int code)
+        public new IActionResult StatusCode(int code)
         {
             if (code == 404)
             {

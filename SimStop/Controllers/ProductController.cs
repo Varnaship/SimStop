@@ -11,15 +11,9 @@ using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController(ApplicationDbContext _context) : Controller
     {
-        private readonly ApplicationDbContext _context;
         private const int PageSize = 10;
-
-        public ProductController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
         [HttpGet]
         [AllowAnonymous]

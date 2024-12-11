@@ -29,6 +29,8 @@ namespace SimStop.Data.Models
         [ForeignKey(nameof(OwnerId))]
         public IdentityUser Owner { get; set; } = null!;
 
+        public bool IsDeleted { get; set; }
+
         public ICollection<ShopProduct> ShopProducts { get; set; } = new List<ShopProduct>();
     }
 }

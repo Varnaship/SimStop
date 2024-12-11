@@ -58,7 +58,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model.Products)
+            @foreach (var product in Model.Products!)
             {
                 <tr>
                     <td>@product.Name</td>

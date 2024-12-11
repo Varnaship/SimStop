@@ -12,17 +12,18 @@ using static SimStop.Common.Constants.DatabaseConstants;
 namespace SimStop.Web.Controllers
 {
     [Authorize]
-    public class ShopsController(ApplicationDbContext context) : BaseController
+    public class ShopsController(ApplicationDbContext _context) : BaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var userId = GetUserId();
-            var locations = await context.Locations.ToListAsync();
+            var locations = await _context.Locations.ToListAsync();
             ViewBag.Locations = locations;
 
-            var model = await context.Shops
+            var model = await _context.Shops
                 .Include(s => s.Location)
+                .Where(s => !s.IsDeleted)
                 .Select(s => new ShopViewModel
                 {
                     Id = s.Id,
@@ -40,8 +41,9 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> Filter(int? locationId)
         {
             var userId = GetUserId();
-            var query = context.Shops
+            var query = _context.Shops
                 .Include(s => s.Location)
+                .Where(s => !s.IsDeleted)
                 .AsQueryable();
 
             if (locationId.HasValue)
@@ -66,9 +68,9 @@ namespace SimStop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var shop = await context.Shops
+            var shop = await _context.Shops
                 .Include(s => s.Location)
-                .Where(s => s.Id == id)
+                .Where(s => s.Id == id && !s.IsDeleted)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -115,7 +117,7 @@ namespace SimStop.Web.Controllers
             }
 
             // Check if a shop with the same name already exists
-            var existingShop = await context.Shops
+            var existingShop = await _context.Shops
                 .FirstOrDefaultAsync(s => s.ShopName == model.ShopName);
 
             if (existingShop != null)
@@ -133,8 +135,8 @@ namespace SimStop.Web.Controllers
                 OwnerId = GetUserId() // Set the owner of the shop
             };
 
-            context.Shops.Add(shop);
-            await context.SaveChangesAsync();
+            _context.Shops.Add(shop);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -143,7 +145,9 @@ namespace SimStop.Web.Controllers
         [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
-            var shop = await context.Shops.FindAsync(id);
+            var shop = await _context.Shops
+                .Where(s => s.Id == id && !s.IsDeleted)
+                .FirstOrDefaultAsync();
 
             if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
@@ -171,7 +175,9 @@ namespace SimStop.Web.Controllers
                 return View(model);
             }
 
-            var shop = await context.Shops.FindAsync(model.Id);
+            var shop = await _context.Shops
+                .Where(s => s.Id == model.Id && !s.IsDeleted)
+                .FirstOrDefaultAsync();
 
             if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
@@ -181,7 +187,7 @@ namespace SimStop.Web.Controllers
             shop.ShopName = model.ShopName;
             shop.LocationId = model.LocationId;
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -190,7 +196,9 @@ namespace SimStop.Web.Controllers
         [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            var shop = await context.Shops.FindAsync(id);
+            var shop = await _context.Shops
+                .Where(s => s.Id == id && !s.IsDeleted)
+                .FirstOrDefaultAsync();
 
             if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
@@ -210,24 +218,25 @@ namespace SimStop.Web.Controllers
         [Authorize(Roles = "ShopAdmin,Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var shop = await context.Shops
+            var shop = await _context.Shops
+                .Where(s => s.Id == id && !s.IsDeleted)
                 .Include(s => s.ShopProducts)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .FirstOrDefaultAsync();
 
             if (shop == null || (shop.OwnerId != GetUserId() && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
 
-            context.Shops.Remove(shop);
-            await context.SaveChangesAsync();
+            shop.IsDeleted = true;
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<List<Location>> GetLocations()
         {
-            return await context.Locations.ToListAsync();
+            return await _context.Locations.ToListAsync();
         }
     }
 }

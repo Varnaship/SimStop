@@ -34,7 +34,7 @@ namespace SimStop.Areas.Admin.Controllers
                 var thisViewModel = new AllUsersViewModel
                 {
                     UserId = user.Id,
-                    Email = user.Email,
+                    Email = user.Email!,
                     Roles = await GetUserRoles(user)
                 };
                 userRolesViewModel.Add(thisViewModel);

@@ -11,12 +11,12 @@ using static SimStop.Common.Constants.DatabaseConstants;
 namespace SimStop.Web.Controllers
 {
     [Authorize]
-    public class ShopProductsController(ApplicationDbContext context) : BaseController
+    public class ShopProductsController(ApplicationDbContext _context) : BaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index(int shopId)
         {
-            var shop = await context.Shops
+            var shop = await _context.Shops
                 .Include(s => s.ShopProducts)
                     .ThenInclude(sp => sp.Product)
                         .ThenInclude(p => p.Brand)
@@ -32,7 +32,7 @@ namespace SimStop.Web.Controllers
                 return NotFound();
             }
 
-            var categories = await context.Categories.ToListAsync();
+            var categories = await _context.Categories.ToListAsync();
             ViewBag.Categories = categories;
 
             var userId = GetUserId();
@@ -64,7 +64,7 @@ namespace SimStop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Filter(int shopId, string name, int? categoryId, int? yearFrom, int? yearTo, decimal? minPrice, decimal? maxPrice, bool? hasDiscount)
         {
-            var query = context.ShopsProducts
+            var query = _context.ShopsProducts
                 .Include(sp => sp.Product)
                 .Where(sp => sp.ShopId == shopId)
                 .AsQueryable();
@@ -118,7 +118,7 @@ namespace SimStop.Web.Controllers
                 })
                 .ToListAsync();
 
-            var shop = await context.Shops
+            var shop = await _context.Shops
                 .Where(s => s.Id == shopId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -142,7 +142,7 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> AddToCart(int productId, int shopId)
         {
             var userId = GetUserId();
-            var product = await context.Products
+            var product = await _context.Products
                 .Include(p => p.ShopProducts)
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
@@ -153,7 +153,7 @@ namespace SimStop.Web.Controllers
                 return Json(new { success = false, message = "Product does not exist." });
             }
 
-            var shopProduct = await context.ShopsProducts
+            var shopProduct = await _context.ShopsProducts
                 .Include(sp => sp.Shop)
                 .FirstOrDefaultAsync(sp => sp.ProductId == productId && sp.ShopId == shopId);
 
@@ -167,7 +167,7 @@ namespace SimStop.Web.Controllers
                 return Json(new { success = false, message = "Owners cannot buy their own products." });
             }
 
-            var existingCartItem = await context.ShopsCustomers
+            var existingCartItem = await _context.ShopsCustomers
                 .FirstOrDefaultAsync(pc => pc.CustomerId == userId && pc.ProductId == productId);
 
             if (existingCartItem != null)
@@ -184,8 +184,8 @@ namespace SimStop.Web.Controllers
                     ShopId = shopId
                 };
 
-                await context.ShopsCustomers.AddAsync(newProductClient);
-                await context.SaveChangesAsync();
+                await _context.ShopsCustomers.AddAsync(newProductClient);
+                await _context.SaveChangesAsync();
 
                 var discount = shopProduct.Discount;
                 var discountedPrice = product.Price * (1 - (decimal)discount / 100);
@@ -214,7 +214,7 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> AddProduct(int shopId)
         {
             var userId = GetUserId();
-            var shop = await context.Shops.FindAsync(shopId);
+            var shop = await _context.Shops.FindAsync(shopId);
 
             if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
@@ -225,7 +225,7 @@ namespace SimStop.Web.Controllers
             {
                 ShopId = shopId,
                 ShopName = shop.ShopName,
-                Products = await context.Products
+                Products = await _context.Products
                     .Where(p => !p.IsDeleted)
                     .Select(p => new ProductViewModel
                     {
@@ -248,7 +248,7 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> AddProduct(AddProductViewModel model)
         {
             var userId = GetUserId();
-            var shop = await context.Shops
+            var shop = await _context.Shops
                 .Include(s => s.ShopProducts)
                 .FirstOrDefaultAsync(s => s.Id == model.ShopId);
 
@@ -257,7 +257,7 @@ namespace SimStop.Web.Controllers
                 return Unauthorized();
             }
 
-            var product = await context.Products.FindAsync(model.ProductId);
+            var product = await _context.Products.FindAsync(model.ProductId);
 
             if (product == null || product.IsDeleted)
             {
@@ -269,7 +269,7 @@ namespace SimStop.Web.Controllers
             if (existingShopProduct != null)
             {
                 ViewBag.ErrorMessage = "Product already exists in the shop.";
-                model.Products = await context.Products
+                model.Products = await _context.Products
                     .Where(p => !p.IsDeleted)
                     .Select(p => new ProductViewModel
                     {
@@ -291,8 +291,8 @@ namespace SimStop.Web.Controllers
                 Discount = 0 // Default discount
             };
 
-            context.ShopsProducts.Add(shopProduct);
-            await context.SaveChangesAsync();
+            _context.ShopsProducts.Add(shopProduct);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index), new { shopId = model.ShopId });
         }
@@ -303,7 +303,7 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> RemoveProduct(int shopId, int productId)
         {
             var userId = GetUserId();
-            var shop = await context.Shops
+            var shop = await _context.Shops
                 .Include(s => s.ShopProducts)
                 .FirstOrDefaultAsync(s => s.Id == shopId);
 
@@ -319,8 +319,8 @@ namespace SimStop.Web.Controllers
                 return NotFound("Product does not exist in the shop.");
             }
 
-            context.ShopsProducts.Remove(shopProduct);
-            await context.SaveChangesAsync();
+            _context.ShopsProducts.Remove(shopProduct);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index), new { shopId = shopId });
         }
@@ -330,21 +330,21 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> ApplyDiscount(int shopId, int productId)
         {
             var userId = GetUserId();
-            var shop = await context.Shops.FindAsync(shopId);
+            var shop = await _context.Shops.FindAsync(shopId);
 
             if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
 
-            var product = await context.Products.FindAsync(productId);
+            var product = await _context.Products.FindAsync(productId);
 
             if (product == null || product.IsDeleted)
             {
                 return NotFound("Product does not exist.");
             }
 
-            var existingDiscount = await context.ShopsProducts
+            var existingDiscount = await _context.ShopsProducts
                 .FirstOrDefaultAsync(d => d.ShopId == shopId && d.ProductId == productId);
 
             var model = new ApplyDiscountViewModel
@@ -364,21 +364,21 @@ namespace SimStop.Web.Controllers
         public async Task<IActionResult> ApplyDiscount(ApplyDiscountViewModel model)
         {
             var userId = GetUserId();
-            var shop = await context.Shops.FindAsync(model.ShopId);
+            var shop = await _context.Shops.FindAsync(model.ShopId);
 
             if (shop == null || (shop.OwnerId != userId && !User.IsInRole("Admin")))
             {
                 return Unauthorized();
             }
 
-            var product = await context.Products.FindAsync(model.ProductId);
+            var product = await _context.Products.FindAsync(model.ProductId);
 
             if (product == null || product.IsDeleted)
             {
                 return NotFound("Product does not exist.");
             }
 
-            var existingDiscount = await context.ShopsProducts
+            var existingDiscount = await _context.ShopsProducts
                 .FirstOrDefaultAsync(d => d.ShopId == model.ShopId && d.ProductId == model.ProductId);
 
             if (existingDiscount != null)
@@ -393,10 +393,10 @@ namespace SimStop.Web.Controllers
                     ProductId = model.ProductId,
                     Discount = model.Discount
                 };
-                context.ShopsProducts.Add(discount);
+                _context.ShopsProducts.Add(discount);
             }
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index), new { shopId = model.ShopId });
         }
