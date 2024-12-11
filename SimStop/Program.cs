@@ -51,6 +51,7 @@ namespace SimStop
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -64,36 +65,12 @@ namespace SimStop
 
             using (var scope = app.Services.CreateScope())
             {
-                var roleManager =
-                     scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var roles = new[] { "Admin", "ShopAdmin", "User"};
-                foreach (var role in roles)
-                {
-                    if (!await roleManager.RoleExistsAsync(role))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(role));
-                    }
-                }
-            }
-            using (var scope = app.Services.CreateScope())
-            {
-                var userManager =
-                     scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-                string email = "Admin@SimStop.com";
-                string password = "Admin1234";
-
-                var user = new IdentityUser();
-                user.UserName = email;
-                user.Email = email;
-
-                await userManager.CreateAsync(user, password);
-
-                await userManager.AddToRoleAsync(user, "Admin");
+                var services = scope.ServiceProvider;
+                await DataSeeder.SeedRolesAndUsers(services);
+                await DataSeeder.SeedShopsAndProducts(services);
             }
 
             app.Run();
         }
     }
 }
-
