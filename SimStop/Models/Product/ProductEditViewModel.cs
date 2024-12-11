@@ -1,5 +1,6 @@
 ﻿using SimStop.Data.Models;
 using System.ComponentModel.DataAnnotations;
+using static SimStop.Common.Constants.DatabaseConstants;
 
 namespace SimStop.Web.Models.Product
 {
@@ -9,7 +10,7 @@ namespace SimStop.Web.Models.Product
         public int Id { get; set; } // Added Id to identify the product
 
         [Required]
-        [StringLength(50, MinimumLength = 3)]
+        [StringLength(ProductNameMaxLength, MinimumLength = ProductNameMinLength)]
         public string Name { get; set; } = null!;
 
         [Required]
@@ -17,7 +18,7 @@ namespace SimStop.Web.Models.Product
         public decimal Price { get; set; }
 
         [Required]
-        [StringLength(200, MinimumLength = 10)]
+        [StringLength(ProductDescriptionMaxLength, MinimumLength = ProductDescriptionMinLength)]
         public string Description { get; set; } = null!;
 
         [Required]

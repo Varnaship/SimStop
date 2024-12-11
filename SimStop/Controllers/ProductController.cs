@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimStop.Data;
 using SimStop.Web.Models.Product;
@@ -21,6 +22,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int pageNumber = 1, string? name = null, int? categoryId = null, int? yearFrom = null, int? yearTo = null, decimal? minPrice = null, decimal? maxPrice = null)
         {
             var categories = await _context.Categories.ToListAsync();
@@ -63,7 +65,7 @@ namespace SimStop.Web.Controllers
 
             var products = await query
                 .Where(p => !p.IsDeleted)
-            .OrderBy(p => p.Name)
+                .OrderBy(p => p.Name)
                 .Skip((pageNumber - 1) * PageSize)
                 .Take(PageSize)
                 .Select(p => new ProductViewModel
@@ -72,7 +74,7 @@ namespace SimStop.Web.Controllers
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ReleaseDate = p.ReleaseDate.ToString("yyyy-MM-dd"),
+                    ReleaseDate = p.ReleaseDate.ToString(ProductReleaseDateFormat),
                     BrandName = p.Brand.Name,
                     CategoryName = p.Category.CategoryName
                 })
@@ -96,6 +98,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int id)
         {
             var product = await _context.Products
@@ -123,6 +126,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> ViewShops(int id)
         {
             var product = await _context.Products
@@ -151,6 +155,51 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
+        {
+            var viewModel = new ProductCreateViewModel
+            {
+                Categories = await _context.Categories.ToListAsync(),
+                Brands = await _context.Brands.ToListAsync(),
+                Locations = await _context.Locations.ToListAsync()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(ProductCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Categories = await _context.Categories.ToListAsync();
+                model.Brands = await _context.Brands.ToListAsync();
+                model.Locations = await _context.Locations.ToListAsync();
+                return View(model);
+            }
+
+            var product = new Product
+            {
+                Name = model.Name,
+                Description = model.Description,
+                ReleaseDate = model.ReleaseDate,
+                Price = model.Price,
+                Weight = model.Weight,
+                CategoryId = model.CategoryId,
+                BrandId = model.BrandId,
+                LocationId = model.LocationId
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _context.Products
@@ -176,6 +225,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(ProductEditViewModel model)
         {
             if (!ModelState.IsValid)
@@ -202,6 +252,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _context.Products
@@ -222,6 +273,7 @@ namespace SimStop.Web.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.FindAsync(id);

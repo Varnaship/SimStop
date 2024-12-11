@@ -17,17 +17,7 @@
         <p><strong>Location:</strong> @Model.LocationName</p>
     </div>
     <div class="card-footer">
-        <!-- Form to add to cart -->
-        <form asp-controller="Product" asp-action="AddToCart" method="post">
-            <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </form>
-
-        <!-- Back to Products -->
         <a asp-action="Index" class="btn btn-secondary">Back to Products</a>
-
-        <!-- Edit button -->
-        <a asp-controller="Product" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
     </div>
 
 </div>

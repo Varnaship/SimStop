@@ -6,6 +6,13 @@
 
 <h1>Products</h1>
 
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Add New Product</a>
+    </p>
+}
+
 <div class="row mb-3">
     <div class="col-md-3">
         <input type="text" id="nameFilter" name="name" class="form-control" placeholder="Search by name" value="@Model.Name" />
@@ -40,7 +47,37 @@
 </div>
 
 <div id="productList">
-    @await Html.PartialAsync("_ProductList", Model.Products)
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Brand</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@product.CategoryName</td>
+                    <td>@product.BrandName</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-info">Details</a>
+                        <a asp-action="ViewShops" asp-route-id="@product.Id" class="btn btn-info">View Shops</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <nav aria-label="Page navigation">
