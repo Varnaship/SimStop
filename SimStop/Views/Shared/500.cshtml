@@ -1,0 +1,41 @@
+﻿@model SimStop.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Internal Server Error";
+}
+
+<style>
+    .error-container {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+        .error-container h1 {
+            font-size: 3em;
+            color: #ff0000;
+        }
+
+        .error-container p {
+            font-size: 1.2em;
+        }
+
+        .error-container a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            .error-container a:hover {
+                background-color: #0056b3;
+            }
+</style>
+
+<div class="error-container">
+    <h1>500 - Internal Server Error</h1>
+    <p>Sorry, something went wrong on our end. Please try again later.</p>
+    <a href="/">Go to Home Page</a>
+</div>
+

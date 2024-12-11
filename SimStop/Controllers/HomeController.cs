@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SimStop.Models;
 using System.Diagnostics;
 
-namespace DeskMarket.Controllers
+namespace SimStop.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -18,5 +18,19 @@ namespace DeskMarket.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult StatusCode(int code)
+        {
+            if (code == 404)
+            {
+                return View("404");
+            }
+            else if (code == 500)
+            {
+                return View("500");
+            }
+            return View("Error");
+        }
     }
 }
+

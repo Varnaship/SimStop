@@ -1,0 +1,40 @@
+﻿@model SimStop.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+<style>
+    .error-container {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+        .error-container h1 {
+            font-size: 3em;
+            color: #ff0000;
+        }
+
+        .error-container p {
+            font-size: 1.2em;
+        }
+
+        .error-container a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            .error-container a:hover {
+                background-color: #0056b3;
+            }
+</style>
+
+<div class="error-container">
+    <h1>404 - Page Not Found</h1>
+    <p>Sorry, the page you are looking for does not exist.</p>
+    <a href="/">Go to Home Page</a>
+</div>
